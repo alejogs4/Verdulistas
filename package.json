@@ -1,0 +1,85 @@
+{
+	"name": "frontend",
+	"version": "1.0.0",
+	"description": "Frontend for verdulistas project",
+	"main": "package.json",
+	"scripts": {
+		"dev": "next",
+		"build": "next build",
+		"start": "next start",
+		"test": "jest --watch",
+		"lint": "eslint --ext .jsx,.js Components",
+		"quality": "npm lint && npm test"
+	},
+	"keywords": [
+		"reactjs",
+		"nextjs",
+		"graphql",
+		"jest",
+		"eslint"
+	],
+	"author": "",
+	"license": "MIT",
+	"dependencies": {
+		"apollo-boost": "^0.4.3",
+		"enzyme": "^3.10.0",
+		"enzyme-adapter-react-16": "^1.14.0",
+		"eslint": "^6.1.0",
+		"graphql": "^14.4.2",
+		"jest": "^24.8.0",
+		"next": "^9.0.3",
+		"prettier": "^1.18.2",
+		"react": "^16.8.6",
+		"react-apollo": "^2.5.8",
+		"react-dom": "^16.8.6",
+		"styled-components": "^4.3.2"
+	},
+	"devDependencies": {
+		"babel-jest": "^24.8.0",
+		"eslint-config-airbnb": "^17.1.1",
+		"eslint-config-prettier": "^6.0.0",
+		"eslint-plugin-import": "^2.18.2",
+		"eslint-plugin-jsx-a11y": "^6.2.3",
+		"eslint-plugin-prettier": "^3.1.0",
+		"eslint-plugin-react": "^7.14.3"
+	},
+	"jest": {
+		"setupFilesAfterEnv": [
+			"<rootDir>/jest.setup.js"
+		],
+		"testPathIgnorePatterns": [
+			"<rootDir>/.next/",
+			"<rootDir>/node_modules/"
+		],
+		"transform": {
+			".*": "babel-jest",
+			"^.+\\.js?$": "babel-jest"
+		}
+	},
+	"babel": {
+		"env": {
+			"development": {
+				"presets": [
+					"next/babel"
+				]
+			},
+			"production": {
+				"presets": [
+					"next/babel"
+				]
+			},
+			"test": {
+				"presets": [
+					[
+						"next/babel",
+						{
+							"preset-env": {
+								"modules": "commonjs"
+							}
+						}
+					]
+				]
+			}
+		}
+	}
+}
