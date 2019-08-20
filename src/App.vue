@@ -34,7 +34,9 @@
                 />Usuario
               </template>
               <b-dropdown-item to="/register">Registrarse</b-dropdown-item>
-              <b-dropdown-item @click="inicio()">Iniciar sesión</b-dropdown-item>
+              <b-dropdown-item @click="inicio()"
+                >Iniciar sesión</b-dropdown-item
+              >
             </b-nav-item-dropdown>
 
             <b-nav-item href="#">
@@ -55,11 +57,24 @@
 
     <b-modal hide-footer id="modal-1" title="Iniciar sesión">
       <b-form>
-        <b-form-group id="input-group-2" label="Nombre usuario:" label-for="input-2">
-          <b-form-input id="input-2" v-model="name" required placeholder="Ingrese nombre"></b-form-input>
+        <b-form-group
+          id="input-group-2"
+          label="Nombre usuario:"
+          label-for="input-2"
+        >
+          <b-form-input
+            id="input-2"
+            v-model="name"
+            required
+            placeholder="Ingrese nombre"
+          ></b-form-input>
         </b-form-group>
 
-        <b-form-group id="input-group-3" label="Contraseña:" label-for="input-3">
+        <b-form-group
+          id="input-group-3"
+          label="Contraseña:"
+          label-for="input-3"
+        >
           <b-form-input
             id="input-3"
             type="password"
