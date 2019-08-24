@@ -1,30 +1,49 @@
 {
-  "name": "verdulistas-vue",
-  "version": "0.1.0",
+  "name": "hospital-web",
+  "version": "1.0.0",
+  "description": "Aplicación web para el HOSPITAL SAN VICENTE DE PAUL DE CALDAS",
+  "author": "creativosdigitales.co",
   "private": true,
   "scripts": {
-    "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "dev": "nuxt",
+    "start": "nuxt start",
+    "dev-debug": "node --debug node_modules/.bin/nuxt",
+    "build": "nuxt build",
+    "generate": "nuxt generate",
+    "fix-memory-limit": "cross-env LIMIT=3072 increase-memory-limit"
   },
   "dependencies": {
-    "bootstrap": "^4.3.1",
-    "bootstrap-vue": "^2.0.0-rc.28",
-    "core-js": "^2.6.5",
-    "vue": "^2.6.10",
-    "vue-router": "^3.0.3",
-    "vuex": "^3.0.1"
+    "@nuxtjs/axios": "^5.0.0",
+    "chart.js": "^2.7.3",
+    "cross-env": "^5.2.0",
+    "intro.js": "^2.9.3",
+    "jspdf": "^1.5.3",
+    "md5": "^2.2.1",
+    "moment": "^2.22.2",
+    "mustache": "^3.0.0",
+    "nuxt": "^2.0.0",
+    "v-money": "^0.8.1",
+    "vue-cookie": "^1.1.4",
+    "vue-html-to-paper": "^1.0.3",
+    "vue-moment": "^4.0.0",
+    "vue2-filters": "^0.3.0",
+    "vuetify": "^1.5.14",
+    "vuetify-datetime-picker": "^1.0.8"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^3.10.0",
-    "@vue/cli-plugin-eslint": "^3.10.0",
-    "@vue/cli-service": "^3.10.0",
-    "@vue/eslint-config-prettier": "^5.0.0",
-    "babel-eslint": "^10.0.1",
-    "eslint": "^5.16.0",
-    "eslint-plugin-prettier": "^3.1.0",
-    "eslint-plugin-vue": "^5.0.0",
-    "prettier": "^1.18.2",
-    "vue-template-compiler": "^2.6.10"
+    "increase-memory-limit": "^1.0.3",
+    "cross-env": "^5.0.5",
+    "nodemon": "^1.11.0",
+    "eslint-config-prettier": "^3.1.0",
+    "eslint-plugin-prettier": "2.6.2",
+    "prettier": "1.14.3",
+    "stylus": "^0.54.5",
+    "stylus-loader": "^3.0.2"
+  },
+  "config": {
+    "nuxt": {
+      "host": "0.0.0.0",
+      "port": "3000"
+    }
   }
 }

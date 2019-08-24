@@ -1,0 +1,9 @@
+{
+    "apps": [
+      {
+        "name": "verdulistas",
+        "script": "npm",
+        "args": "start"
+      }
+    ]
+  }
