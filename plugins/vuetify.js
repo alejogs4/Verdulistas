@@ -3,12 +3,12 @@ import Vuetify from "vuetify";
 
 Vue.use(Vuetify, {
   theme: {
-    primary: '#9E9D24', // a color that is not in the material colors palette
-    accent: '#827717',
+    primary: '#7CB342', // a color that is not in the material colors palette
+    accent: '#33691E',
     secondary: '#EEEEEE',
-    info: '#004D40',
-    warning: '#E65100',
+    info: '#33691E',
+    warning: '#9E9D24',
     error: '#B71C1C',
-    success: '#1B5E20',
+    success: '#33691E',
   }
 });

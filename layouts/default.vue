@@ -17,7 +17,7 @@
       </v-toolbar-items>
       <v-spacer />
       <v-toolbar-items>
-        <v-btn v-if="!logged" to="/login" tile depressed>
+        <v-btn v-if="!logged" to="/login" depressed>
           <v-icon>person_add_disabled</v-icon>Ingresar
         </v-btn>
 
@@ -30,17 +30,17 @@
           </v-btn>
           <v-card>
             <v-list dense>
-              <v-btn to="/profile" color="info" depressed>
+              <v-btn to="/profile" color="info" depressed outline>
                 <v-icon>account_circle</v-icon>Perfil
               </v-btn>
-              <v-btn @click="exit()" color="warning" depressed>
+              <v-btn @click="exit()" color="error" depressed outline>
                 Salir
                 <v-icon right>exit_to_app</v-icon>
               </v-btn>
             </v-list>
           </v-card>
         </v-menu>
-        <v-btn v-if="activePage == 'catalogue'" tile depressed color="primary">
+        <v-btn v-if="activePage == 'catalogue'" depressed color="primary">
           <v-icon>shopping_cart</v-icon>Carrito
         </v-btn>
       </v-toolbar-items>

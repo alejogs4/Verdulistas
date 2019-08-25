@@ -1,15 +1,28 @@
 <template>
   <div>
-    <v-avatar tile size="60%">
-      <img src="https://i.imgur.com/VlBmu6I.png" alt="avatar" />
-    </v-avatar>
-    <v-btn x-large depressed>
-      <v-chip class="ma-2"
-      x-large >  
-        CATÁLOGO
-        <v-icon left large color="primary">person</v-icon>
-      </v-chip>
-    </v-btn>
+    <v-layout justify-center>
+      <v-flex >
+        <v-card>
+          <v-container fluid grid-list-md>
+            <v-layout row wrap>
+              <v-flex>
+                <v-card color="primary">
+                  <v-img src="https://i.imgur.com/VlBmu6I.png" block>
+                  </v-img>
+                </v-card>
+              </v-flex>
+              <v-flex>
+                <v-card>
+                  <v-img src="https://i.imgur.com/VlBmu6I.png" height="200px">
+                  </v-img>
+                </v-card>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card>
+      </v-flex>
+    </v-layout>
+
     <toast />
   </div>
 </template>

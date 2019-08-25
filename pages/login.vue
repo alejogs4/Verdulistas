@@ -1,13 +1,19 @@
 <template>
   <div>
-    <v-tabs fixed-tabs color="secondary" light :slider-color="color">
-      <v-tab active @click="setTab('login')">
-        <v-icon>how_to_reg</v-icon>Iniciar sesión
+    <v-tabs fixed-tabs color="secondary" light slider-color="warning">
+      <v-tab active>
+        <v-btn :color="colorL" @click="setTab('login')" depressed outline>
+          <v-icon>how_to_reg</v-icon>Iniciar sesión
+        </v-btn>
       </v-tab>
-      <v-tab @click="setTab('register')">
-        <v-icon>add_circle_outline</v-icon>Registrarse
+      <v-tab>
+        <v-btn :color="colorR" @click="setTab('register')" depressed outline>
+          <v-icon>add_circle_outline</v-icon>Registrarse
+        </v-btn>
       </v-tab>
     </v-tabs>
+    <br />
+    <v-divider></v-divider>
 
     <div v-if="selected">
       <v-flex xs12 sm12 md12 class="pb-3">
@@ -37,7 +43,7 @@
                 <v-icon>{{ icon }}</v-icon>
                 {{ title }}
               </v-btn>
-              <v-btn @click="limpiarCampos()">
+              <v-btn @click="limpiarCampos()" outline>
                 <v-icon>loop</v-icon>LIMPIAR CAMPOS
               </v-btn>
             </v-form>
@@ -66,11 +72,11 @@
                 label="Confirmar contraseña"
                 required
               ></v-text-field>
-              <v-btn :disabled="!valid" class="success" @click="login()">
+              <v-btn :disabled="!valid" class="success" @click="register()">
                 <v-icon>{{ icon }}</v-icon>
                 {{ title }}
               </v-btn>
-              <v-btn @click="limpiarCampos()">
+              <v-btn @click="limpiarCampos()" outline>
                 <v-icon>loop</v-icon>LIMPIAR CAMPOS
               </v-btn>
             </v-form>
@@ -116,7 +122,8 @@ export default {
       selected: false,
       title: "",
       icon: "",
-      color: "secondary"
+      colorL: "",
+      colorR: ""
     };
   },
   methods: {
@@ -126,11 +133,14 @@ export default {
       if (tab == "login") {
         self.title = "Iniciar sesión";
         self.icon = "done_outline";
+        self.colorL = "warning";
+        self.colorR = "";
       } else {
         self.title = "Registrarse";
         self.icon = "save";
+        self.colorR = "warning";
+        self.colorL = "";
       }
-      self.color = "success";
       self.selected = true;
     },
     limpiarCampos() {
