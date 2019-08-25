@@ -1,65 +1,56 @@
 <template>
-  <div>
-    <v-app>
-      <v-toolbar fixed app>
-        <v-toolbar-items>
-          <v-btn to="/" large depressed color="primary">
-            <v-avatar>
-              <img src="../assets/img/icono.png" alt="avatar" />
-            </v-avatar>Verdulistas
-          </v-btn>
-        </v-toolbar-items>
+  <v-app>
+    <v-toolbar class="mx-lg-auto" sticky>
+      <v-toolbar-items>
+        <v-btn to="/" large depressed color="primary">
+          <v-avatar>
+            <img src="../assets/img/icono.png" alt="avatar" />
+          </v-avatar>Verdulistas
+        </v-btn>
+      </v-toolbar-items>
 
-        <v-spacer />
-        <v-toolbar-items>
-          <v-btn to="/entities" large depressed>Catálogo</v-btn>
-          <v-btn to="/users" large depressed>VerduPoints</v-btn>
-          <v-btn to="/projects" large depressed>Recetas</v-btn>
-        </v-toolbar-items>
-        <v-spacer />
-        <v-toolbar-items>
-          <v-btn v-if="!logged" to="/login" tile depressed>
-            <v-icon>person_add_disabled</v-icon>Ingresar
-          </v-btn>
+      <v-spacer />
+      <v-toolbar-items>
+        <v-btn to="/catalogue" large depressed>Catálogo</v-btn>
+        <v-btn to="/points" large depressed>VerduPoints</v-btn>
+        <v-btn to="/recipes" large depressed>Recetas</v-btn>
+      </v-toolbar-items>
+      <v-spacer />
+      <v-toolbar-items>
+        <v-btn v-if="!logged" to="/login" tile depressed>
+          <v-icon>person_add_disabled</v-icon>Ingresar
+        </v-btn>
 
-          <v-menu
-            offset-y
-            content-class="dropdown-menu"
-            transition="slide-y-transition"
-            openOnHover
-          >
-            <v-btn slot="activator" depressed v-if="logged">
-              <v-chip>
-                <v-icon left color="primary">person</v-icon>
-                {{ user }}
-              </v-chip>
-            </v-btn>
-            <v-card>
-              <v-list dense>
-                <v-btn to="/home" color="primary" small depressed>
-                  <v-icon>account_circle</v-icon>Perfil
-                </v-btn>
-                <v-btn to="/acl" color="warning" small depressed>
-                  Salir
-                  <v-icon right>exit_to_app</v-icon>
-                </v-btn>
-              </v-list>
-            </v-card>
-          </v-menu>
-          <v-btn to="/" tile depressed color="primary">
-            <v-icon>shopping_cart</v-icon>Carrito
+        <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition" openOnHover>
+          <v-btn slot="activator" depressed v-if="logged">
+            <v-chip>
+              <v-icon left color="primary">person</v-icon>
+              {{ user }}
+            </v-chip>
           </v-btn>
-        </v-toolbar-items>
-      </v-toolbar>
+          <v-card>
+            <v-list dense>
+              <v-btn to="/home" color="info" depressed>
+                <v-icon>account_circle</v-icon>Perfil
+              </v-btn>
+              <v-btn @click="exit()" color="warning" depressed>
+                Salir
+                <v-icon right>exit_to_app</v-icon>
+              </v-btn>
+            </v-list>
+          </v-card>
+        </v-menu>
+        <v-btn to="/" tile depressed color="primary">
+          <v-icon>shopping_cart</v-icon>Carrito
+        </v-btn>
+      </v-toolbar-items>
+    </v-toolbar>
 
-      <v-content class="blank">
-        <v-container>
-          <nuxt />
-        </v-container>
-      </v-content>
-    </v-app>
+    <v-container block>
+      <nuxt />
+    </v-container>
     <toast />
-  </div>
+  </v-app>
 </template>
 
 
@@ -76,7 +67,7 @@ export default {
   },
   data() {
     return {
-      logged: false,
+      logged: true,
       user: "",
       rolUser: "",
       entityUser: null
@@ -90,9 +81,18 @@ export default {
       var rol = config.cookie.roles;
       this.rolUser = this.$cookie.get(rol);
       this.user = this.$cookie.get(username);
-      if (this.user) {
-        this.logged = true;
-      }
+
+      // Comprobación del logeo
+      // if (this.user) {
+      //   this.logged = true;
+      // }
+    },
+    exit() {
+      this.$cookie.delete(config.cookie.userid);
+      this.$cookie.delete(config.cookie.username);
+      this.$cookie.delete(config.cookie.roles);
+      this.logged = false;
+      this.$router.push("/");
     }
   }
 };

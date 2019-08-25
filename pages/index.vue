@@ -1,10 +1,8 @@
 <template>
-  <v-app class="index">
-    <v-layout align-center justify-center>
-
-    </v-layout>
+  <div>
+    <v-img src="https://i.imgur.com/RwC0DsD.png" aspect-ratio="1" height="500"></v-img>
     <toast />
-  </v-app>
+  </div>
 </template>
 
 <script>
@@ -16,16 +14,12 @@ export default {
   components: {
     Toast
   },
-  beforeMount() {
-  },
+  beforeMount() {},
   data() {
     return {
-      loading: false,
-      editing: false,
       message: ""
     };
   },
-  methods: {
-  }
+  methods: {}
 };
 </script>
