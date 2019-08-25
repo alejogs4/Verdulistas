@@ -1,8 +1,8 @@
 {
-  "name": "hospital-web",
+  "name": "verdulistas-web",
   "version": "1.0.0",
-  "description": "Aplicación web para el HOSPITAL SAN VICENTE DE PAUL DE CALDAS",
-  "author": "creativosdigitales.co",
+  "description": "Aplicación web para el VERDULISTAS",
+  "author": "maugarbru",
   "private": true,
   "scripts": {
     "dev": "nuxt",

@@ -1,6 +1,15 @@
 <template>
   <div>
-    <v-img src="https://i.imgur.com/RwC0DsD.png" aspect-ratio="1" height="500"></v-img>
+    <v-avatar tile size="60%">
+      <img src="https://i.imgur.com/VlBmu6I.png" alt="avatar" />
+    </v-avatar>
+    <v-btn x-large depressed>
+      <v-chip class="ma-2"
+      x-large >  
+        CATÁLOGO
+        <v-icon left large color="primary">person</v-icon>
+      </v-chip>
+    </v-btn>
     <toast />
   </div>
 </template>

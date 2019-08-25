@@ -11,9 +11,9 @@
 
       <v-spacer />
       <v-toolbar-items>
-        <v-btn to="/catalogue" large depressed>Catálogo</v-btn>
-        <v-btn to="/points" large depressed>VerduPoints</v-btn>
-        <v-btn to="/recipes" large depressed>Recetas</v-btn>
+        <v-btn to="/catalogue" @click="setPage('catalogue')" large depressed>Catálogo</v-btn>
+        <v-btn to="/recipes" @click="setPage('recipes')" large depressed>Recetas</v-btn>
+        <v-btn to="/points" @click="setPage('points')" large depressed>VerduPoints</v-btn>
       </v-toolbar-items>
       <v-spacer />
       <v-toolbar-items>
@@ -30,7 +30,7 @@
           </v-btn>
           <v-card>
             <v-list dense>
-              <v-btn to="/home" color="info" depressed>
+              <v-btn to="/profile" color="info" depressed>
                 <v-icon>account_circle</v-icon>Perfil
               </v-btn>
               <v-btn @click="exit()" color="warning" depressed>
@@ -40,13 +40,13 @@
             </v-list>
           </v-card>
         </v-menu>
-        <v-btn to="/" tile depressed color="primary">
+        <v-btn v-if="activePage == 'catalogue'" tile depressed color="primary">
           <v-icon>shopping_cart</v-icon>Carrito
         </v-btn>
       </v-toolbar-items>
     </v-toolbar>
 
-    <v-container block>
+    <v-container>
       <nuxt />
     </v-container>
     <toast />
@@ -68,6 +68,7 @@ export default {
   data() {
     return {
       logged: true,
+      activePage: "",
       user: "",
       rolUser: "",
       entityUser: null
@@ -93,6 +94,9 @@ export default {
       this.$cookie.delete(config.cookie.roles);
       this.logged = false;
       this.$router.push("/");
+    },
+    setPage(page) {
+      this.activePage = page;
     }
   }
 };
