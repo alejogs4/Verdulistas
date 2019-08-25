@@ -46,7 +46,7 @@
                     {{ title }}
                   </v-btn>
                   <v-btn @click="limpiarCampos()" outline>
-                    <v-icon>loop</v-icon>LIMPIAR CAMPOS
+                    <v-icon>restore</v-icon>LIMPIAR CAMPOS
                   </v-btn>
                 </v-form>
 
@@ -85,7 +85,7 @@
                     {{ title }}
                   </v-btn>
                   <v-btn @click="limpiarCampos()" outline>
-                    <v-icon>loop</v-icon>LIMPIAR CAMPOS
+                    <v-icon>restore</v-icon>LIMPIAR CAMPOS
                   </v-btn>
                 </v-form>
               </v-card-text>

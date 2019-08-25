@@ -1,12 +1,16 @@
 <template>
   <v-container>
     <v-layout>
+      <!-- Filtros -->
       <v-flex xs2>
         <v-navigation-drawer permanent>
           <v-toolbar flat>
             <v-list class="primary">
               <v-list-tile>
-                <v-list-tile-title class="title">Filtros</v-list-tile-title>
+                <v-list-tile-title class="title">
+                  Filtros
+                  <v-icon>search</v-icon>
+                </v-list-tile-title>
               </v-list-tile>
             </v-list>
           </v-toolbar>
@@ -22,8 +26,13 @@
             </v-list-tile>
           </v-list>
           <v-divider></v-divider>
+          <v-btn @click="limpiarFiltros()" small outline>
+            <v-icon>restore</v-icon>Limpiar filtros
+          </v-btn>
         </v-navigation-drawer>
       </v-flex>
+
+      <!-- Catálogo -->
       <v-flex>
         <v-card>
           <v-card-title>
@@ -47,6 +56,8 @@
         </v-btn>
       </v-flex>
     </v-layout>
+
+    <!-- CARRITO -->
     <v-layout wrap style="height: 200px;">
       <v-navigation-drawer v-model="drawer" absolute dark right temporary>
         <v-list class="pa-1">
@@ -65,7 +76,7 @@
           </v-list-tile>
         </v-list>
 
-        <v-list class="pt-0" dense>
+        <v-list class="pt-0">
           <v-list-tile v-for="item in items" :key="item.title">
             <v-list-tile-action>
               <v-icon>{{ item.icon }}</v-icon>
@@ -74,6 +85,17 @@
             <v-list-tile-content>
               <v-list-tile-title>{{ item.title }}</v-list-tile-title>
             </v-list-tile-content>
+          </v-list-tile>
+
+          <v-divider light></v-divider>
+          <v-list-tile>
+            <v-btn class="success">
+              <v-icon>shop</v-icon>Comprar
+            </v-btn>
+            <v-btn class="error">
+              Cancelar
+              <v-icon>remove_shopping_cart</v-icon>
+            </v-btn>
           </v-list-tile>
         </v-list>
       </v-navigation-drawer>
@@ -93,11 +115,13 @@ export default {
         { title: "Home", icon: "dashboard" },
         { title: "About", icon: "question_answer" }
       ],
-      mini: false
+      cart: []
     };
   },
   computed: {},
   watch: {},
-  methods: {}
+  methods: {
+    limpiarFiltros() {}
+  }
 };
 </script>
