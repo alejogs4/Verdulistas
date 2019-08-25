@@ -52,8 +52,10 @@
                   <h3>Todo Verdulistas en tu celular.</h3>
                   <h3>Recíbelas en la comodidad de tu casa.</h3>
                   <h3>
-                    <v-icon>adb</v-icon>
-                    <i>[Disponible en Android]</i>
+                    <i>
+                      - Disponible en Android
+                      <v-icon>android</v-icon> -
+                    </i>
                   </h3>
                 </v-card-text>
                 <v-card-actions>

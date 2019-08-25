@@ -1,91 +1,101 @@
 <template>
-  <div>
-    <v-tabs fixed-tabs color="secondary" light slider-color="warning">
-      <v-tab active>
-        <v-btn :color="colorL" @click="setTab('login')" depressed outline>
-          <v-icon>how_to_reg</v-icon>Iniciar sesión
-        </v-btn>
-      </v-tab>
-      <v-tab>
-        <v-btn :color="colorR" @click="setTab('register')" depressed outline>
-          <v-icon>add_circle_outline</v-icon>Registrarse
-        </v-btn>
-      </v-tab>
-    </v-tabs>
-    <br />
-    <v-divider></v-divider>
+  <v-container fluid fill-height class="responsive">
+    <v-layout justify-center>
+      <div>
+        <v-tabs fixed-tabs color="secondary" light slider-color="warning">
+          <v-tab active>
+            <v-btn :color="colorL" @click="setTab('login')" depressed outline>
+              <v-icon>how_to_reg</v-icon>Iniciar sesión
+            </v-btn>
+          </v-tab>
+          <v-tab>
+            <v-btn :color="colorR" @click="setTab('register')" depressed outline>
+              <v-icon>add_circle_outline</v-icon>Registrarse
+            </v-btn>
+          </v-tab>
+        </v-tabs>
+        <br />
+        <v-divider></v-divider>
 
-    <div v-if="selected">
-      <v-flex xs12 sm12 md12 class="pb-3">
-        <v-card>
-          <v-card-title class="primary">
-            <h1 class="text-center">
-              <strong>{{ title }}</strong>
-            </h1>
-          </v-card-title>
-          <v-card-text>
-            <v-form ref="form" v-if="title == 'Iniciar sesión'" v-model="valid">
-              <v-text-field
-                v-model="emailLog"
-                type="email"
-                :rules="emailRules"
-                label="E-mail"
-                required
-              ></v-text-field>
-              <v-text-field
-                v-model="passwordLog"
-                type="password"
-                :rules="rules"
-                label="Contraseña"
-                required
-              ></v-text-field>
-              <v-btn :disabled="!valid" class="success" @click="login()">
-                <v-icon>{{ icon }}</v-icon>
-                {{ title }}
-              </v-btn>
-              <v-btn @click="limpiarCampos()" outline>
-                <v-icon>loop</v-icon>LIMPIAR CAMPOS
-              </v-btn>
-            </v-form>
+        <div v-if="selected">
+          <v-flex xs12 sm12 md12 class="pb-3">
+            <v-card>
+              <v-card-title class="primary">
+                <h1 class="text-center">
+                  <strong>{{ title }}</strong>
+                </h1>
+              </v-card-title>
+              <v-card-text>
+                <v-form ref="form" v-if="title == 'Iniciar sesión'" v-model="valid">
+                  <v-text-field
+                    v-model="emailLog"
+                    type="email"
+                    :rules="emailRules"
+                    label="E-mail"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="passwordLog"
+                    type="password"
+                    :rules="rules"
+                    label="Contraseña"
+                    required
+                  ></v-text-field>
+                  <v-btn :disabled="!valid" class="success" @click="login()">
+                    <v-icon>{{ icon }}</v-icon>
+                    {{ title }}
+                  </v-btn>
+                  <v-btn @click="limpiarCampos()" outline>
+                    <v-icon>loop</v-icon>LIMPIAR CAMPOS
+                  </v-btn>
+                </v-form>
 
-            <v-form ref="form" v-if="title == 'Registrarse'" v-model="valid">
-              <v-text-field v-model="name" type="text" :rules="rules" label="Nombre" required></v-text-field>
-              <v-text-field v-model="lastname" type="text" :rules="rules" label="Apellido" required></v-text-field>
-              <v-text-field
-                v-model="email"
-                type="email"
-                :rules="emailRules"
-                label="E-mail"
-                required
-              ></v-text-field>
-              <v-text-field
-                v-model="password"
-                type="password"
-                :rules="passwordRules"
-                label="Contraseña"
-                required
-              ></v-text-field>
-              <v-text-field
-                v-model="confpassword"
-                type="password"
-                :rules="passwordRules"
-                label="Confirmar contraseña"
-                required
-              ></v-text-field>
-              <v-btn :disabled="!valid" class="success" @click="register()">
-                <v-icon>{{ icon }}</v-icon>
-                {{ title }}
-              </v-btn>
-              <v-btn @click="limpiarCampos()" outline>
-                <v-icon>loop</v-icon>LIMPIAR CAMPOS
-              </v-btn>
-            </v-form>
-          </v-card-text>
-        </v-card>
-      </v-flex>
-    </div>
-    <toast />
-  </div>
+                <v-form ref="form" v-if="title == 'Registrarse'" v-model="valid">
+                  <v-text-field v-model="name" type="text" :rules="rules" label="Nombre" required></v-text-field>
+                  <v-text-field
+                    v-model="lastname"
+                    type="text"
+                    :rules="rules"
+                    label="Apellido"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="email"
+                    type="email"
+                    :rules="emailRules"
+                    label="E-mail"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="password"
+                    type="password"
+                    :rules="passwordRules"
+                    label="Contraseña"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="confpassword"
+                    type="password"
+                    :rules="passwordRules"
+                    label="Confirmar contraseña"
+                    required
+                  ></v-text-field>
+                  <v-btn :disabled="!valid" class="success" @click="register()">
+                    <v-icon>{{ icon }}</v-icon>
+                    {{ title }}
+                  </v-btn>
+                  <v-btn @click="limpiarCampos()" outline>
+                    <v-icon>loop</v-icon>LIMPIAR CAMPOS
+                  </v-btn>
+                </v-form>
+              </v-card-text>
+            </v-card>
+          </v-flex>
+        </div>
+        <toast />
+      </div>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
