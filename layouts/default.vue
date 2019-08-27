@@ -11,9 +11,9 @@
 
       <v-spacer />
       <v-toolbar-items>
-        <v-btn to="/catalogue" @click="setPage('catalogue')" large depressed>Catálogo</v-btn>
-        <v-btn to="/recipes" @click="setPage('recipes')" large depressed>Recetas</v-btn>
-        <v-btn to="/points" @click="setPage('points')" large depressed>VerduPoints</v-btn>
+        <v-btn to="/catalogue" large depressed>Catálogo</v-btn>
+        <v-btn to="/recipes" large depressed>Recetas</v-btn>
+        <v-btn to="/points" large depressed>VerduPoints</v-btn>
       </v-toolbar-items>
       <v-spacer />
       <v-toolbar-items>
@@ -24,14 +24,16 @@
         <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition" openOnHover>
           <v-btn slot="activator" depressed v-if="logged">
             <v-chip>
-              <v-icon left color="primary">person</v-icon>
+              <v-avatar>
+                <v-icon color="primary">account_circle</v-icon>
+              </v-avatar>
               {{ user }}
             </v-chip>
           </v-btn>
           <v-card>
             <v-list dense>
               <v-btn to="/profile" color="info" depressed outline>
-                <v-icon>account_circle</v-icon>Perfil
+                <v-icon>person</v-icon>Perfil
               </v-btn>
               <v-btn @click="exit()" color="error" depressed outline>
                 Salir
@@ -40,35 +42,27 @@
             </v-list>
           </v-card>
         </v-menu>
-        <v-btn v-if="activePage == 'catalogue'" depressed color="primary">
-          <v-icon>shopping_cart</v-icon>Carrito
-        </v-btn>
       </v-toolbar-items>
     </v-toolbar>
 
     <v-container>
       <nuxt />
     </v-container>
-    <toast />
   </v-app>
 </template>
 
 
 <script>
 import config from "@/assets/js/config";
-import toast from "@/components/Toast";
 
 export default {
-  components: {
-    toast
-  },
+  components: {},
   beforeMount() {
     this.getUser();
   },
   data() {
     return {
-      logged: true,
-      activePage: "",
+      logged: false,
       user: "",
       rolUser: "",
       entityUser: null
@@ -82,21 +76,17 @@ export default {
       var rol = config.cookie.roles;
       this.rolUser = this.$cookie.get(rol);
       this.user = this.$cookie.get(username);
-
-      // Comprobación del logeo
-      // if (this.user) {
-      //   this.logged = true;
-      // }
+      if (this.user) {
+        this.logged = true;
+      }
     },
     exit() {
       this.$cookie.delete(config.cookie.userid);
       this.$cookie.delete(config.cookie.username);
-      this.$cookie.delete(config.cookie.roles);
+      this.$cookie.delete(config.cookie.rol);
+      this.$cookie.delete(config.cookie.token);
       this.logged = false;
       this.$router.push("/");
-    },
-    setPage(page) {
-      this.activePage = page;
     }
   }
 };
