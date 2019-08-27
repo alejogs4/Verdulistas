@@ -7,8 +7,11 @@
           <v-list class="secondary">
             <v-list-tile>
               <v-list-tile-title class="title">
-                Filtros
-                <v-icon>search</v-icon>
+                <strong>
+                  [
+                  <v-icon color="warning">build</v-icon>WIP]
+                  <v-icon>policy</v-icon>Filtros
+                </strong>
               </v-list-tile-title>
             </v-list-tile>
           </v-list>
@@ -23,11 +26,13 @@
               <v-list-tile-title>{{ item.title }}</v-list-tile-title>
             </v-list-tile-content>
           </v-list-tile>
+          <v-divider></v-divider>
+          <div class="secondary">
+            <v-btn @click="limpiarFiltros()" small outline>
+              <v-icon>restore</v-icon>Limpiar filtros
+            </v-btn>
+          </div>
         </v-list>
-        <v-divider></v-divider>
-        <v-btn @click="limpiarFiltros()" small outline>
-          <v-icon>restore</v-icon>Limpiar filtros
-        </v-btn>
       </v-navigation-drawer>
 
       <!-- Catálogo -->
@@ -57,7 +62,7 @@
                       <v-btn icon outline @click="showProduct(product)">
                         <v-icon>zoom_in</v-icon>
                       </v-btn>
-                      <v-btn icon outline color="accent">
+                      <v-btn icon outline color="accent" @click="addProductToCart(product)">
                         <v-icon>add_shopping_cart</v-icon>
                       </v-btn>
                     </v-card-actions>
@@ -71,7 +76,10 @@
         <!-- Botón carrito -->
       </v-flex>
       <v-flex xs1>
-        <v-btn dark large color="info" @click.stop="drawer = !drawer">
+        <v-btn dark color="info" @click.stop="drawer = !drawer">
+          <v-avatar size="25px" color="warning">
+            <span class="white--text">{{ cart.length }}</span>
+          </v-avatar>
           <v-icon dark>shopping_cart</v-icon>Ver carrito
         </v-btn>
       </v-flex>
@@ -81,7 +89,7 @@
     <v-layout wrap style="height: 200px;">
       <v-navigation-drawer v-model="drawer" absolute right temporary>
         <v-list class="pa-1">
-          <v-list-tile avatar tag="div" class="secondary">
+          <v-list-tile avatar tag="div" class="warning">
             <v-icon left>shopping_cart</v-icon>
 
             <v-list-tile-content>
@@ -90,29 +98,35 @@
 
             <v-list-tile-action>
               <v-btn icon @click.stop="drawer = !drawer">
-                <v-icon>clear</v-icon>
+                <v-icon color="warning">exit_to_app</v-icon>
               </v-btn>
             </v-list-tile-action>
           </v-list-tile>
         </v-list>
-
-        <v-list class="pt-0">
-          <v-list-tile v-for="item in cart" :key="item.title">
-            <v-list-tile-action>
-              <v-icon>{{ item.icon }}</v-icon>
-            </v-list-tile-action>
-
+        <v-container>
+          <v-alert :value="cart.length == 0" color="grey">
+            <v-icon dark left>error</v-icon>El carrito está vacío.
+          </v-alert>
+        </v-container>
+        <v-list>
+          <v-list-tile v-for="item in cart" :key="item.id">
             <v-list-tile-content>
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+              <v-list-tile-title v-html="item.name"></v-list-tile-title>
             </v-list-tile-content>
-          </v-list-tile>
 
+            <v-list-tile-action>
+              <v-btn icon>
+                <v-icon color="error" @click="cleanCart(item.id)">clear</v-icon>
+              </v-btn>
+            </v-list-tile-action>
+          </v-list-tile>
+          <br />
           <v-divider light></v-divider>
           <v-list-tile>
             <v-btn class="success">
               <v-icon>shop</v-icon>Comprar
             </v-btn>
-            <v-btn class="error">
+            <v-btn class="error" @click="cleanCart()">
               Cancelar
               <v-icon>remove_shopping_cart</v-icon>
             </v-btn>
@@ -132,7 +146,7 @@
             <strong>{{selected.code}}</strong>
           </v-chip>
         </v-img>
-        <br/>
+        <br />
         <v-card-title class="warning">
           <h1>{{selected.name}}</h1>
         </v-card-title>
@@ -145,7 +159,7 @@
             <strong>Precio: ${{selected.price}}</strong>
           </v-chip>
           <v-spacer></v-spacer>
-          <v-btn color="accent">
+          <v-btn color="accent" @click="addProductToCart(selected)">
             Añadir al carrito
             <v-icon>add_shopping_cart</v-icon>
           </v-btn>
@@ -171,8 +185,8 @@ export default {
       loading: null,
       drawer: null,
       items: [
-        { title: "Home", icon: "dashboard" },
-        { title: "About", icon: "question_answer" }
+        { title: "Nombre", icon: "keyboard" },
+        { title: "Precio", icon: "attach_money" }
       ],
       cart: [],
       products: [],
@@ -191,7 +205,7 @@ export default {
         data: {
           query: `
             {
-               products {
+              products {
                 id,
                 code,
                 name,
@@ -211,6 +225,22 @@ export default {
     showProduct(product) {
       this.selected = product;
       this.dialog = true;
+    },
+    addProductToCart(product) {
+      this.cart.push(product);
+    },
+    cleanCart(id) {
+      let newCart = this.cart;
+      if (id) {
+        for (let index = 0; index < this.cart.length; index++) {
+          if (id == this.cart[index].id) {
+            newCart.splice(index, 1);
+          }
+        }
+        this.cart = newCart;
+      } else {
+        this.cart = [];
+      }
     }
   }
 };

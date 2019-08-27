@@ -74,12 +74,9 @@
 </template>
 
 <script>
-import Toast from "@/components/Toast";
 export default {
   layout: "default",
-  components: {
-    Toast
-  },
+  components: {},
   beforeMount() {},
   data() {
     return {

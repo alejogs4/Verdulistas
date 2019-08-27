@@ -1,7 +1,7 @@
 <template>
   <v-container fluid fill-height class="responsive">
-    <v-layout justify-center>
-      <div>
+    <v-layout align-center justify-center>
+      <v-flex xs8>
         <v-tabs fixed-tabs color="secondary" light slider-color="warning">
           <v-tab active>
             <v-btn :color="colorL" @click="setTab('login')" depressed outline>
@@ -11,6 +11,12 @@
           <v-tab>
             <v-btn :color="colorR" @click="setTab('register')" depressed outline>
               <v-icon>add_circle_outline</v-icon>Registrarse
+            </v-btn>
+          </v-tab>
+          <v-spacer></v-spacer>
+          <v-tab>
+            <v-btn to="/" color="error" depressed outline>
+              <v-icon>exit_to_app</v-icon>Volver
             </v-btn>
           </v-tab>
         </v-tabs>
@@ -30,7 +36,7 @@
                   <v-text-field
                     v-model="emailLog"
                     type="email"
-                    :rules="emailRules"
+                    :rules="rules"
                     label="E-mail"
                     required
                   ></v-text-field>
@@ -89,28 +95,32 @@
                   </v-btn>
                 </v-form>
               </v-card-text>
+              <v-progress-linear color="info" indeterminate v-if="loading"></v-progress-linear>
+              <v-alert :value="error" color="error">
+                <v-icon dark left>error</v-icon>
+                <i>Email o contraseña incorrectos, intente de nuevo.</i>
+              </v-alert>
             </v-card>
           </v-flex>
         </div>
-        <toast />
-      </div>
+      </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import toast from "@/components/Toast";
 import config from "@/assets/js/config";
+const axios = require("axios");
 
 export default {
-  components: {
-    toast
-  },
+  layout: "blank",
+  components: {},
   beforeMount() {
     this.setTab("login");
   },
   data() {
     return {
+      loading: false,
       valid: false,
       name: "",
       lastname: "",
@@ -133,7 +143,10 @@ export default {
       title: "",
       icon: "",
       colorL: "",
-      colorR: ""
+      colorR: "",
+      user: {},
+      token: "",
+      error: false
     };
   },
   methods: {
@@ -162,6 +175,45 @@ export default {
       self.name = "";
       self.email = "";
       self.password = "";
+    },
+    login() {
+      this.loading = true;
+      axios({
+        url: config.api.url,
+        method: "POST",
+        data: {
+          query: `
+            mutation {
+              signIn (email:"${this.emailLog}", password: "${
+            this.passwordLog
+          }") {
+                user {
+                  id,
+                  name,
+                  lastname,
+                  email,
+                  admin
+                },
+                token
+              }  
+            }
+          `
+        }
+      }).then(result => {
+        if (result.data.errors) {
+          this.error = true;
+          this.loading = false;
+        } else {
+          this.token = result.data.data.signIn.token;
+          this.user = result.data.data.signIn.user;
+          this.$cookie.set(config.cookie.token, this.token);
+          this.$cookie.set(config.cookie.userid, this.user.id);
+          this.$cookie.set(config.cookie.username, this.user.name);
+          this.$cookie.set(config.cookie.rol, this.user.admin);
+          this.loading = false;
+          this.$router.push("/catalogue");
+        }
+      });
     }
   }
 };
