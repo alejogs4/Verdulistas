@@ -13,7 +13,7 @@
           <v-card-text>
             <h1>
               <strong>Recetas</strong>
-              <v-icon color="success" large right>assignment</v-icon>
+              <v-icon color="success" large right>receipt</v-icon>
             </h1>Página de recetas.
           </v-card-text>
         </v-card>

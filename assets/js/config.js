@@ -3,11 +3,7 @@ let routers = require("./routes").default;
 let config = {
   // Metodos genericos
   api: {
-    url: "http://localhost:3100/api/v1/",
-    catalog: "http://localhost:3100/catalog/api/v1/",
-  },
-  path: {
-    catalog: ""
+    url: "http://173.255.216.213:8000/graphql",
   },
   store: {
     user: "user"
