@@ -195,7 +195,7 @@ export default {
                   admin
                 },
                 token
-              }  
+              }
             }
           `
         }
@@ -206,7 +206,7 @@ export default {
         } else {
           this.token = result.data.data.signIn.token;
           this.user = result.data.data.signIn.user;
-          this.$cookie.set(config.cookie.token, this.token);
+          this.$cookie.set('token', this.token);
           this.$cookie.set(config.cookie.userid, this.user.id);
           this.$cookie.set(config.cookie.username, this.user.name);
           this.$cookie.set(config.cookie.rol, this.user.admin);

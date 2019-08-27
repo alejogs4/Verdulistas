@@ -78,7 +78,7 @@
       <v-flex xs1>
         <v-btn dark color="info" @click.stop="drawer = !drawer">
           <v-avatar size="25px" color="warning">
-            <span class="white--text">{{ cart.length }}</span>
+            <span class="white--text">{{ quantity }}</span>
           </v-avatar>
           <v-icon dark>shopping_cart</v-icon>Ver carrito
         </v-btn>
@@ -111,22 +111,23 @@
         <v-list>
           <v-list-tile v-for="item in cart" :key="item.id">
             <v-list-tile-content>
-              <v-list-tile-title v-html="item.name"></v-list-tile-title>
+              <v-list-tile-title v-html="item.product.name"></v-list-tile-title>
+              <v-list-tile-title v-html="item.quantity"></v-list-tile-title>
             </v-list-tile-content>
 
             <v-list-tile-action>
               <v-btn icon>
-                <v-icon color="error" @click="cleanCart(item.id)">clear</v-icon>
+                <v-icon color="error" @click="cleanCart(item.id, item.product.id)">clear</v-icon>
               </v-btn>
             </v-list-tile-action>
           </v-list-tile>
           <br />
           <v-divider light></v-divider>
           <v-list-tile>
-            <v-btn class="success">
+            <v-btn class="success" @click="generateOrder()">
               <v-icon>shop</v-icon>Comprar
             </v-btn>
-            <v-btn class="error" @click="cleanCart()">
+            <v-btn class="error" @click="cleanAllCart()">
               Cancelar
               <v-icon>remove_shopping_cart</v-icon>
             </v-btn>
@@ -189,6 +190,8 @@ export default {
         { title: "Precio", icon: "attach_money" }
       ],
       cart: [],
+      quantity: 0,
+      cartId: -1,
       products: [],
       selected: {}
     };
@@ -202,6 +205,7 @@ export default {
       axios({
         url: config.api.url,
         method: "POST",
+        headers: { token: this.$cookie.get("token") },
         data: {
           query: `
             {
@@ -214,33 +218,155 @@ export default {
                 image,
                 quantity
               }
+              userCart {
+                id
+                cartItems {
+                  id
+                  quantity
+                  cart_id
+                  product {
+                    id
+                    name
+                  }
+                }
+              }
             }
           `
         }
-      }).then(result => {
-        this.loading = false;
-        this.products = result.data.data.products;
-      });
+      })
+        .then(result => result.data.data)
+        .then(result => {
+          this.loading = false;
+          this.products = result.products;
+          if (result.userCart) {
+            this.cartId = result.userCart.id
+            this.cart = result.userCart.cartItems;
+            this.quantity = result.userCart.cartItems.reduce(
+              (a, b) => a + b.quantity,
+              0
+            );
+          }
+        });
     },
     showProduct(product) {
       this.selected = product;
       this.dialog = true;
     },
     addProductToCart(product) {
-      this.cart.push(product);
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get("token") },
+        data: {
+          query: `
+            mutation {
+              addProductToCart(productId: ${product.id}) {
+                id
+                cart_id
+                quantity
+                product {
+                  id
+                  name
+                }
+              }
+            }
+          `
+        }
+      })
+        .then(response => response.data.data.addProductToCart)
+        .then(_product => {
+          const productIndex = this.cart.findIndex(element => element.product.id === product.id);
+          if (this.cart[productIndex]) {
+            this.cart[productIndex] = _product;
+          } else {
+            this.cart.push(_product);
+          }
+          this.quantity = this.cart.reduce((a, b) => a + b.quantity, 0);
+          this.cartId = _product.cart_id
+        });
     },
-    cleanCart(id) {
-      let newCart = this.cart;
-      if (id) {
-        for (let index = 0; index < this.cart.length; index++) {
-          if (id == this.cart[index].id) {
-            newCart.splice(index, 1);
+    cleanCart(cartId, productId) {
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get("token") },
+        data: {
+          query: `
+            mutation {
+              deleteOneProductFromCart(cartItemId: ${cartId}, productId: ${productId}) {
+                id
+                cart_id
+                quantity
+                product {
+                  id
+                  name
+                }
+              }
+            }
+          `
+        }
+      })
+      .then(response => response.data.data.deleteOneProductFromCart)
+      .then(item => {
+        const productIndex = this.cart.findIndex(element => element.product.id === productId)
+        if (!this.cart[productIndex]) return
+        this.cart[productIndex] = item
+        this.cartId = item.cart_id
+        this.quantity = this.cart.reduce((a, b) => a + b.quantity, 0);
+      })
+      .catch(error => {
+        console.log(error.message)
+      })
+    },
+    cleanAllCart() {
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get("token") },
+        data: {
+          query: `
+            mutation {
+              deleteCart(cartId: ${this.cartId}) {
+                id
+              }
+            }
+          `
+        }
+      })
+      .then(response => {
+        this.cart = []
+        this.cartId = -1
+        this.quantity = 0
+      })
+      .catch(error => {
+        console.log(error)
+      })
+    },
+    generateOrder() {
+      const order = {address: 'Cra 20#33-47', phone: '3176634256'}
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get("token") },
+        data: {
+          query: `
+            mutation generateOrder($order: OrderInput!) {
+              createOrder(order: $order) {
+                message
+              }
+            }
+          `,
+          variables: {
+            order
           }
         }
-        this.cart = newCart;
-      } else {
-        this.cart = [];
-      }
+      })
+      .then(response => {
+        this.quantity = 0
+        this.cartId = -1
+        this.cart = []
+        alert('Carrito creado')
+      })
     }
   }
 };
