@@ -1,5 +1,5 @@
 <template>
-  <v-app>
+  <v-app class="secondary">
     <v-container>
       <nuxt/>
     </v-container>

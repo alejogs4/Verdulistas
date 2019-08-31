@@ -50,7 +50,7 @@
               <v-layout wrap>
                 <v-flex v-for="product in products" :key="product.id">
                   <v-card>
-                    <v-img :src="product.image" contain>
+                    <v-img :src="product.image" width="220px">
                       <v-chip dark class="warning" @click="showProduct(product)">
                         <strong>{{product.name}}</strong>
                       </v-chip>
@@ -62,7 +62,13 @@
                       <v-btn icon outline @click="showProduct(product)">
                         <v-icon>zoom_in</v-icon>
                       </v-btn>
-                      <v-btn icon outline color="accent" @click="addProductToCart(product)">
+                      <v-btn
+                        v-if="logged"
+                        icon
+                        outline
+                        color="accent"
+                        @click="addProductToCart(product)"
+                      >
                         <v-icon>add_shopping_cart</v-icon>
                       </v-btn>
                     </v-card-actions>
@@ -76,8 +82,8 @@
         <!-- Botón carrito -->
       </v-flex>
       <v-flex xs1>
-        <v-btn dark color="info" @click.stop="drawer = !drawer">
-          <v-avatar size="25px" color="warning">
+        <v-btn v-if="logged" dark color="info" @click.stop="drawer = !drawer">
+          <v-avatar v-if="quantity > 0" size="25px" color="warning">
             <span class="white--text">{{ quantity }}</span>
           </v-avatar>
           <v-icon dark>shopping_cart</v-icon>Ver carrito
@@ -153,16 +159,20 @@
         </v-card-title>
         <v-card-text>{{selected.description}}</v-card-text>
         <v-card-actions>
-          <v-chip color="primary" label outline dark>
+          <v-chip color="info" label outline dark>
             <v-avatar>
               <v-icon>local_atm</v-icon>
             </v-avatar>
             <strong>Precio: ${{selected.price}}</strong>
           </v-chip>
           <v-spacer></v-spacer>
-          <v-btn color="accent" @click="addProductToCart(selected)">
+          <v-btn v-if="logged" color="accent" @click="addProductToCart(selected)">
             Añadir al carrito
             <v-icon>add_shopping_cart</v-icon>
+          </v-btn>
+          <v-btn v-if="!logged" color="error" to="/login">
+            <v-icon left>person_add_disabled</v-icon>
+            Iniciar sesión
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -172,16 +182,19 @@
 
 <script>
 import config from "@/assets/js/config";
+import graphQL from "@/assets/js/graphQL";
 const axios = require("axios");
 
 export default {
   layout: "default",
   components: {},
   mounted() {
+    this.getUser();
     this.getData();
   },
   data() {
     return {
+      logged: false,
       dialog: false,
       loading: null,
       drawer: null,
@@ -205,33 +218,9 @@ export default {
       axios({
         url: config.api.url,
         method: "POST",
-        headers: { token: this.$cookie.get("token") },
+        headers: { token: this.$cookie.get(config.cookie.token) },
         data: {
-          query: `
-            {
-              products {
-                id,
-                code,
-                name,
-                description,
-                price,
-                image,
-                quantity
-              }
-              userCart {
-                id
-                cartItems {
-                  id
-                  quantity
-                  cart_id
-                  product {
-                    id
-                    name
-                  }
-                }
-              }
-            }
-          `
+          query: graphQL.queries.catalogue
         }
       })
         .then(result => result.data.data)
@@ -239,7 +228,7 @@ export default {
           this.loading = false;
           this.products = result.products;
           if (result.userCart) {
-            this.cartId = result.userCart.id
+            this.cartId = result.userCart.id;
             this.cart = result.userCart.cartItems;
             this.quantity = result.userCart.cartItems.reduce(
               (a, b) => a + b.quantity,
@@ -256,7 +245,7 @@ export default {
       axios({
         url: config.api.url,
         method: "POST",
-        headers: { token: this.$cookie.get("token") },
+        headers: { token: this.$cookie.get(config.cookie.token) },
         data: {
           query: `
             mutation {
@@ -275,21 +264,23 @@ export default {
       })
         .then(response => response.data.data.addProductToCart)
         .then(_product => {
-          const productIndex = this.cart.findIndex(element => element.product.id === product.id);
+          const productIndex = this.cart.findIndex(
+            element => element.product.id === product.id
+          );
           if (this.cart[productIndex]) {
             this.cart[productIndex] = _product;
           } else {
             this.cart.push(_product);
           }
           this.quantity = this.cart.reduce((a, b) => a + b.quantity, 0);
-          this.cartId = _product.cart_id
+          this.cartId = _product.cart_id;
         });
     },
     cleanCart(cartId, productId) {
       axios({
         url: config.api.url,
         method: "POST",
-        headers: { token: this.$cookie.get("token") },
+        headers: { token: this.$cookie.get(config.cookie.token) },
         data: {
           query: `
             mutation {
@@ -306,23 +297,25 @@ export default {
           `
         }
       })
-      .then(response => response.data.data.deleteOneProductFromCart)
-      .then(item => {
-        const productIndex = this.cart.findIndex(element => element.product.id === productId)
-        if (!this.cart[productIndex]) return
-        this.cart[productIndex] = item
-        this.cartId = item.cart_id
-        this.quantity = this.cart.reduce((a, b) => a + b.quantity, 0);
-      })
-      .catch(error => {
-        console.log(error.message)
-      })
+        .then(response => response.data.data.deleteOneProductFromCart)
+        .then(item => {
+          const productIndex = this.cart.findIndex(
+            element => element.product.id === productId
+          );
+          if (!this.cart[productIndex]) return;
+          this.cart[productIndex] = item;
+          this.cartId = item.cart_id;
+          this.quantity = this.cart.reduce((a, b) => a + b.quantity, 0);
+        })
+        .catch(error => {
+          console.log(error.message);
+        });
     },
     cleanAllCart() {
       axios({
         url: config.api.url,
         method: "POST",
-        headers: { token: this.$cookie.get("token") },
+        headers: { token: this.$cookie.get(config.cookie.token) },
         data: {
           query: `
             mutation {
@@ -333,21 +326,21 @@ export default {
           `
         }
       })
-      .then(response => {
-        this.cart = []
-        this.cartId = -1
-        this.quantity = 0
-      })
-      .catch(error => {
-        console.log(error)
-      })
+        .then(response => {
+          this.cart = [];
+          this.cartId = -1;
+          this.quantity = 0;
+        })
+        .catch(error => {
+          console.log(error);
+        });
     },
     generateOrder() {
-      const order = {address: 'Cra 20#33-47', phone: '3176634256'}
+      const order = { address: "Cra 20#33-47", phone: "3176634256" };
       axios({
         url: config.api.url,
         method: "POST",
-        headers: { token: this.$cookie.get("token") },
+        headers: { token: this.$cookie.get(config.cookie.token) },
         data: {
           query: `
             mutation generateOrder($order: OrderInput!) {
@@ -360,13 +353,21 @@ export default {
             order
           }
         }
-      })
-      .then(response => {
-        this.quantity = 0
-        this.cartId = -1
-        this.cart = []
-        alert('Carrito creado')
-      })
+      }).then(response => {
+        this.quantity = 0;
+        this.cartId = -1;
+        this.cart = [];
+        alert("Carrito creado");
+      });
+    },
+    getUser() {
+      var username = config.cookie.username;
+      this.user = this.$cookie.get(username);
+      if (this.user) {
+        this.logged = true;
+      } else {
+        this.cleanAllCart();
+      }
     }
   }
 };
