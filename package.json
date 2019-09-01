@@ -10,7 +10,8 @@
     "dev-debug": "node --debug node_modules/.bin/nuxt",
     "build": "nuxt build",
     "generate": "nuxt generate",
-    "fix-memory-limit": "cross-env LIMIT=3072 increase-memory-limit"
+    "fix-memory-limit": "cross-env LIMIT=3072 increase-memory-limit",
+    "unit": "jest"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",
@@ -31,11 +32,12 @@
     "vuetify-datetime-picker": "^1.0.8"
   },
   "devDependencies": {
-    "increase-memory-limit": "^1.0.3",
     "cross-env": "^5.0.5",
-    "nodemon": "^1.11.0",
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-prettier": "2.6.2",
+    "increase-memory-limit": "^1.0.3",
+    "jest": "^24.9.0",
+    "nodemon": "^1.11.0",
     "prettier": "1.14.3",
     "stylus": "^0.54.5",
     "stylus-loader": "^3.0.2"
