@@ -95,7 +95,7 @@
     <v-layout wrap style="height: 200px;">
       <v-navigation-drawer v-model="drawer" absolute right temporary>
         <v-list class="pa-1">
-          <v-list-tile avatar tag="div" class="warning">
+          <v-list-tile avatar tag="div" class="primary ">
             <v-icon left>shopping_cart</v-icon>
 
             <v-list-tile-content>
@@ -104,45 +104,50 @@
 
             <v-list-tile-action>
               <v-btn icon @click.stop="drawer = !drawer">
-                <v-icon color="warning">exit_to_app</v-icon>
+                <v-icon>exit_to_app</v-icon>
               </v-btn>
             </v-list-tile-action>
           </v-list-tile>
         </v-list>
-        <v-container>
+        <v-container v-if="cart.length == 0">
           <v-alert :value="cart.length == 0" color="grey">
             <v-icon dark left>error</v-icon>El carrito está vacío.
           </v-alert>
         </v-container>
-        <v-list>
-          <v-list-tile v-for="item in cart" :key="item.id">
-            <v-list-tile-content>
-              <v-list-tile-title v-html="item.product.name"></v-list-tile-title>
-              <v-list-tile-title v-html="item.quantity"></v-list-tile-title>
-            </v-list-tile-content>
+        <v-list two-line dense class="secondary">
+          <template v-for="item in cart">
+            <v-list-tile :key="item.product.name" avatar>
+              <v-list-tile-avatar>
+                <v-btn icon small color="warning">{{ item.quantity }}</v-btn>
+              </v-list-tile-avatar>
 
-            <v-list-tile-action>
-              <v-btn icon>
-                <v-icon color="error" @click="cleanCart(item.id, item.product.id)">clear</v-icon>
+              <v-list-tile-content>
+                <v-list-tile-title v-html="item.product.name"></v-list-tile-title>
+                <v-list-tile-sub-title v-html="item.product.price"></v-list-tile-sub-title>
+              </v-list-tile-content>
+              <v-btn icon small outline color="error">
+                <v-icon small>arrow_downward</v-icon>
               </v-btn>
-            </v-list-tile-action>
-          </v-list-tile>
-          <br />
-          <v-divider light></v-divider>
-          <v-list-tile>
-            <v-btn class="success" @click="generateOrder()">
-              <v-icon>shop</v-icon>Comprar
-            </v-btn>
-            <v-btn class="error" @click="cleanAllCart()">
-              Cancelar
-              <v-icon>remove_shopping_cart</v-icon>
-            </v-btn>
-          </v-list-tile>
+              <v-btn icon small outline color="success">
+                <v-icon small>arrow_upward</v-icon>
+              </v-btn>
+            </v-list-tile>
+          </template>
         </v-list>
+        <v-divider light></v-divider>
+        <v-list-tile>
+          <v-btn class="success" @click="generateOrder()">
+            <v-icon>shop</v-icon>Comprar
+          </v-btn>
+          <v-btn class="error" @click="cleanAllCart()">
+            Cancelar
+            <v-icon>remove_shopping_cart</v-icon>
+          </v-btn>
+        </v-list-tile>
       </v-navigation-drawer>
     </v-layout>
 
-    <!-- DIALOGO -->
+    <!-- DESCRIPCION DE PRODUCTO -->
     <v-dialog v-model="dialog" max-width="400">
       <v-card>
         <v-img :src="selected.image" contain>
@@ -171,8 +176,7 @@
             <v-icon>add_shopping_cart</v-icon>
           </v-btn>
           <v-btn v-if="!logged" color="error" to="/login">
-            <v-icon left>person_add_disabled</v-icon>
-            Iniciar sesión
+            <v-icon left>person_add_disabled</v-icon>Iniciar sesión
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -256,6 +260,7 @@ export default {
                 product {
                   id
                   name
+                  price
                 }
               }
             }

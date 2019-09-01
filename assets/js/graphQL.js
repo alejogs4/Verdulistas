@@ -20,6 +20,7 @@ let graphQL = {
               product {
                 id
                 name
+                price
               }
             }
           }
