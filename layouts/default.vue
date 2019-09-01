@@ -27,7 +27,7 @@
               <v-avatar>
                 <v-icon color="primary">account_circle</v-icon>
               </v-avatar>
-              {{ user }}
+              <strong>{{ user }}</strong>
             </v-chip>
           </v-btn>
           <v-card>
@@ -84,7 +84,7 @@ export default {
       this.$cookie.delete(config.cookie.userid);
       this.$cookie.delete(config.cookie.username);
       this.$cookie.delete(config.cookie.rol);
-      this.$cookie.delete('token');
+      this.$cookie.delete(config.cookie.token);
       this.logged = false;
       this.$router.push("/");
     }

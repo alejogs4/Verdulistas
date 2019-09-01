@@ -2,7 +2,7 @@
   <v-container fluid fill-height class="responsive">
     <v-layout align-center justify-center>
       <v-flex xs8>
-        <v-tabs fixed-tabs color="secondary" light slider-color="warning">
+        <v-tabs fixed-tabs light slider-color="warning">
           <v-tab active>
             <v-btn :color="colorL" @click="setTab('login')" depressed outline>
               <v-icon>how_to_reg</v-icon>Iniciar sesión
@@ -20,12 +20,11 @@
             </v-btn>
           </v-tab>
         </v-tabs>
-        <br />
         <v-divider></v-divider>
 
         <div v-if="selected">
           <v-flex xs12 sm12 md12 class="pb-3">
-            <v-card>
+            <v-card elevation="15">
               <v-card-title class="primary">
                 <h1 class="text-center">
                   <strong>{{ title }}</strong>
@@ -36,7 +35,7 @@
                   <v-text-field
                     v-model="emailLog"
                     type="email"
-                    :rules="rules"
+                    :rules="emailRules"
                     label="E-mail"
                     required
                   ></v-text-field>
@@ -97,8 +96,16 @@
               </v-card-text>
               <v-progress-linear color="info" indeterminate v-if="loading"></v-progress-linear>
               <v-alert :value="error" color="error">
-                <v-icon dark left>error</v-icon>
-                <i>Email o contraseña incorrectos, intente de nuevo.</i>
+                <h4>
+                  <v-icon dark left>error</v-icon>
+                  <i>{{ errorText }}</i>
+                </h4>
+              </v-alert>
+              <v-alert :value="success" color="info">
+                <h4>
+                  <v-icon dark left>assignment_turned_in</v-icon>
+                  <i>{{ successText }}</i>
+                </h4>
               </v-alert>
             </v-card>
           </v-flex>
@@ -116,6 +123,7 @@ export default {
   layout: "blank",
   components: {},
   beforeMount() {
+    this.getUser();
     this.setTab("login");
   },
   data() {
@@ -136,7 +144,8 @@ export default {
       ],
       passwordRules: [
         v => !!v || "Ingrese contraseña",
-        v => (v && v.length > 6) || "Contraseña debe ser mayor de 6 caracteres"
+        v =>
+          (v && v.length >= 6) || "Contraseña debe ser de al menos 6 caracteres"
       ],
       rules: [v => !!v || "Campo obligatorio"],
       selected: false,
@@ -146,7 +155,10 @@ export default {
       colorR: "",
       user: {},
       token: "",
-      error: false
+      error: false,
+      errorText: "",
+      success: false,
+      successText: ""
     };
   },
   methods: {
@@ -166,16 +178,21 @@ export default {
       }
       self.selected = true;
     },
+
     limpiarCampos() {
       let self = this;
       self.emailLog = "";
       self.passwordLog = "";
-      self.lastname = "";
-      self.confpassword = "";
       self.name = "";
+      self.lastname = "";
       self.email = "";
       self.password = "";
+      self.confpassword = "";
+      self.error = false;
+      self.loading = false;
+      self.success = false;
     },
+
     login() {
       this.loading = true;
       axios({
@@ -202,18 +219,76 @@ export default {
       }).then(result => {
         if (result.data.errors) {
           this.error = true;
+          this.errorText = "Email o contraseña incorrectos, intente de nuevo.";
           this.loading = false;
         } else {
           this.token = result.data.data.signIn.token;
           this.user = result.data.data.signIn.user;
-          this.$cookie.set('token', this.token);
+          this.$cookie.set(config.cookie.token, this.token);
           this.$cookie.set(config.cookie.userid, this.user.id);
           this.$cookie.set(config.cookie.username, this.user.name);
           this.$cookie.set(config.cookie.rol, this.user.admin);
           this.loading = false;
-          this.$router.push("/catalogue");
+          this.success = true;
+          this.successText = `Bienvenido a Verdulistas, ${this.user.name}!`;
+          setTimeout(() => this.$router.push("/catalogue"), 1500);
         }
       });
+    },
+
+    register() {
+      if (this.password != this.confpassword) {
+        this.error = true;
+        this.errorText = "Las contraseñas deben coincidir.";
+        this.loading = false;
+      } else {
+        this.loading = true;
+        var user = {
+          name: this.name,
+          lastname: this.lastname,
+          email: this.email,
+          password: this.password
+        };
+        axios({
+          url: config.api.url,
+          method: "POST",
+          data: {
+            query: `
+            mutation register($user: UserInput!) {
+              signUp (user: $user) {
+                email
+              }
+            }
+          `,
+            variables: {
+              user
+            }
+          }
+        }).then(result => {
+          if (result.data.errors) {
+            this.error = true;
+            this.errorText =
+              "Error en el registro, posiblemente ya tenga una cuenta registrada";
+            this.loading = false;
+          } else {
+            this.error = false;
+            this.loading = false;
+            this.success = true;
+            var email = result.data.data.signUp.email;
+            this.successText = `Registro completo! Ahora puedes iniciar sesión con: ${email}`;
+            setTimeout(() => this.setTab("login"), 1000);
+          }
+        });
+      }
+    },
+
+    getUser() {
+      var username = config.cookie.username;
+      this.user = this.$cookie.get(username);
+      if (this.user) {
+        alert("Ya se encuentra loggeado en una cuenta.");
+        this.$router.push("/");
+      }
     }
   }
 };
