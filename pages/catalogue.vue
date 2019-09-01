@@ -95,7 +95,7 @@
     <v-layout wrap style="height: 200px;">
       <v-navigation-drawer v-model="drawer" absolute right temporary>
         <v-list class="pa-1">
-          <v-list-tile avatar tag="div" class="primary ">
+          <v-list-tile avatar tag="div" class="primary">
             <v-icon left>shopping_cart</v-icon>
 
             <v-list-tile-content>
@@ -125,22 +125,29 @@
                 <v-list-tile-title v-html="item.product.name"></v-list-tile-title>
                 <v-list-tile-sub-title v-html="item.product.price"></v-list-tile-sub-title>
               </v-list-tile-content>
-              <v-btn icon small outline color="error">
+              <v-btn
+                icon
+                small
+                outline
+                :disabled="item.quantity == 1"
+                color="error"
+                @click="cleanCart(item.id, item.product.id)"
+              >
                 <v-icon small>arrow_downward</v-icon>
               </v-btn>
-              <v-btn icon small outline color="success">
+              <!-- <v-btn icon small outline color="success">
                 <v-icon small>arrow_upward</v-icon>
-              </v-btn>
+              </v-btn>-->
             </v-list-tile>
           </template>
         </v-list>
         <v-divider light></v-divider>
         <v-list-tile>
-          <v-btn class="success" @click="generateOrder()">
+          <v-btn outline color="success" :disabled="quantity == 0" @click="orderPrice()">
             <v-icon>shop</v-icon>Comprar
           </v-btn>
-          <v-btn class="error" @click="cleanAllCart()">
-            Cancelar
+          <v-btn outline @click="cleanAllCart()">
+            Vaciar
             <v-icon>remove_shopping_cart</v-icon>
           </v-btn>
         </v-list-tile>
@@ -181,6 +188,101 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- CONFIRMACIÓN DE COMPRA -->
+    <v-dialog v-model="dialogCompra" scrollable max-width="550">
+      <v-card>
+        <v-card-title class="primary">
+          <h1>Confirmar Pedido</h1>
+        </v-card-title>
+        <v-card-text>
+          <v-container>
+            <table
+              class="mytable"
+              id="table1"
+              style="border: 0.3px solid black;
+            border-collapse: collapse;
+            vertical-align: center;"
+            >
+              <tr>
+                <td
+                  v-for="head in headers"
+                  :key="head.value"
+                  style="background-color:rgb(235,241,222);border:0.2px solid black; text-align: center; padding: 5px;"
+                >
+                  <b>{{head.title}}</b>
+                </td>
+              </tr>
+              <tr
+                v-for="item in cart"
+                :key="item.id"
+                style="background-color: rgb(200,200,200); color:black; border:0.2px solid black;"
+              >
+                <td style="border:0.2px solid black; padding: 5px;">{{ item.product.name }}</td>
+                <td style="border:0.2px solid black; text-align: center;">{{ item.quantity }}</td>
+                <td
+                  style="border:0.2px solid black; text-align: right; padding: 5px;"
+                >${{ item.product.price }}</td>
+                <td style="border:0.2px solid black; text-align: right; padding: 5px;">
+                  <b>${{ item.quantity*item.product.price }}</b>
+                </td>
+              </tr>
+              <tr style="height: 20px;"></tr>
+              <tr
+                style="background-color: rgb(200,200,200); color:black; border:0.2px solid black; text-align: center; padding: 5px;"
+              >
+                <td>
+                  <b>Total de pedido</b>
+                </td>
+                <td></td>
+                <td></td>
+                <td
+                  style="background-color: rgb(235,241,222); color:black; border:0.2px solid black; padding: 5px;"
+                >
+                  <b>${{totalPrice}}</b>
+                </td>
+              </tr>
+            </table>
+          </v-container>
+          <v-container class="secondary">
+            <h2>Información de pedido</h2>
+            <v-form ref="form" v-model="valid">
+              <v-text-field
+                v-model="address"
+                type="text"
+                :rules="rules"
+                label="Dirección de entrega"
+                required
+              ></v-text-field>
+              <v-text-field
+                v-model="phone"
+                type="text"
+                :rules="phoneRules"
+                label="Teléfono de contacto"
+                required
+              ></v-text-field>
+            </v-form>
+          </v-container>
+        </v-card-text>
+        <v-divider light></v-divider>
+        <v-card-actions>
+          <v-btn class="success" :disabled="quantity == 0 || !valid" @click="generateOrder()">
+            <v-icon>done_all</v-icon>Confirmar
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn class="error" @click="dialogCompra = false">
+            Cancelar
+            <v-icon>clear</v-icon>
+          </v-btn>
+        </v-card-actions>
+        <v-alert :value="order" color="info">
+          <h4>
+            <v-icon dark left>done_all</v-icon>
+            <i>{{ orderText }}</i>
+          </h4>
+        </v-alert>
+      </v-card>
+    </v-dialog>
   </v-flex>
 </template>
 
@@ -198,19 +300,38 @@ export default {
   },
   data() {
     return {
+      valid: false,
+      order: false,
+      orderText: "",
       logged: false,
       dialog: false,
+      dialogCompra: false,
       loading: null,
       drawer: null,
       items: [
         { title: "Nombre", icon: "keyboard" },
         { title: "Precio", icon: "attach_money" }
       ],
+      headers: [
+        { title: "Producto", value: "name" },
+        { title: "Cantidad", value: "quantity" },
+        { title: "Precio x unidad", value: "price" },
+        { title: "Precio", value: "totalPrice" }
+      ],
+      rules: [v => !!v || "Campo obligatorio"],
+      phoneRules: [
+        v => !!v || "Ingrese teléfono",
+        v =>
+          (v && v.length >= 10) || "Teléfono debe tener al menos 10 caracteres."
+      ],
       cart: [],
       quantity: 0,
       cartId: -1,
       products: [],
-      selected: {}
+      selected: {},
+      totalPrice: 0,
+      address: "",
+      phone: ""
     };
   },
   computed: {},
@@ -296,6 +417,7 @@ export default {
                 product {
                   id
                   name
+                  price
                 }
               }
             }
@@ -341,7 +463,7 @@ export default {
         });
     },
     generateOrder() {
-      const order = { address: "Cra 20#33-47", phone: "3176634256" };
+      const order = { address: this.address, phone: this.phone };
       axios({
         url: config.api.url,
         method: "POST",
@@ -362,7 +484,10 @@ export default {
         this.quantity = 0;
         this.cartId = -1;
         this.cart = [];
-        alert("Carrito creado");
+        this.orderText = "Pedido generado correctamente, compruebe su correo";
+        this.order = true;
+        setTimeout(() => this.order = false, 1500);
+        setTimeout(() => this.dialogCompra = false, 2500)
       });
     },
     getUser() {
@@ -373,6 +498,16 @@ export default {
       } else {
         this.cleanAllCart();
       }
+    },
+    orderPrice() {
+      this.address = "",
+      this.phone = "",
+      this.valid = false,
+      this.totalPrice = 0;
+      this.cart.forEach(element => {
+        this.totalPrice += element.product.price * element.quantity;
+      });
+      this.dialogCompra = true;
     }
   }
 };
