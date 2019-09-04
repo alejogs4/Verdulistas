@@ -1,50 +1,20 @@
-# APP WEB
+# Verdulistas
 
-> NUXT APP WEB is a template nuxt with vuetify, axios, Vue moment, vue filters and Vue cookie
+> Verdulistas es un proyecto de una empresa de alimentos procesados y empacados al vacío. La idea y el requerimiento que tiene la empresa es un aplicativo web, que permita realizar compras de sus productos en tiempo real.
 
-## CONFIGURACION NODEJS
-## npm install -g increase-memory-limit
-## increase-memory-limit
-## DEPENDENCIES
+---------------------
 
-0. Vuetify https://vuetifyjs.com/en/ npm install vuetify --save
-1. Vue Filters https://github.com/freearhey/vue2-filters npm install vue2-filters --save
-1. Vue moment https://github.com/brockpetrie/vue-moment npm install vue-moment --save
-1. Vue cookie https://github.com/alfhen/vue-cookie npm install vue-cookie --save
-1. vuetify-datetime-picker vuetify-datetime-picker
-1. jsPDF https://parall.ax/products/jspdf npm install jsPDF --save
+El proyecto está desarrollado en el framework para frontend Vue.js, con un backend basado en GraphQL (express, node.js).
 
-## How do I start it?
+El servidor en el que está montado el backend, está en Linode, en una máquina Linux que ofrece 1GB de RAM y 25GB de almacenamiento.
 
-> From https://github.com/nuxt-community/create-nuxt-app
+----------------------
 
-```bash
-0. Prerequisites NPM since 5.2.0
-1. $ npm install -g npx
-2. $ npx create-nuxt-app
-3. Select serve none(nuxt)
-4. Select UI framework (Vuetify)
-5. Rendering mode (Universal)
-6. Axios module (yes)
-7. eslint (no)
-8. package manager (npm)
-```
+Para correr el proyecto en desarrollo, se puede montar el servidor para el frontend de Vue.js, siguiendo las siguientes instrucciones:
 
-## Build Setup from nuxt
+1. Instalar (Node.js)[https://nodejs.org/es/] con npm incluido.
+2. Descargar el proyecto o hacer clone del repositorio de Github.
+3. En la consola en el directorio del proyecto, ejecutar los comandos:
 
-```bash
-# install dependencies
-$ npm install
-
-# serve with hot reload at localhost:3000
-$ npm run dev
-
-# build for production and launch server
-$ npm run build
-$ npm start
-
-# generate static project
-$ npm run generate
-
-For detailed explanation on how things work, checkout [Nuxt.js docs](https://nuxtjs.org).
-```
+```npm install```
+```npm run dev```
