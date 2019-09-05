@@ -16,6 +16,10 @@ Para correr el proyecto en desarrollo, se puede montar el servidor para el front
 2. Descargar el proyecto o hacer clone del repositorio de Github.
 3. En la consola en el directorio del proyecto, ejecutar los comandos:
 
-```npm install```
+```
+npm install
+```
 
-```npm run dev```
+```
+npm run dev
+```
