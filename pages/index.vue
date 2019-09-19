@@ -68,8 +68,6 @@
         </v-layout>
       </v-flex>
     </v-layout>
-
-    <toast />
   </div>
 </template>
 

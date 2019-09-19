@@ -27,7 +27,7 @@
               <v-avatar>
                 <v-icon color="primary">account_circle</v-icon>
               </v-avatar>
-              {{ user }}
+              <strong>{{ user }}</strong>
             </v-chip>
           </v-btn>
           <v-card>
