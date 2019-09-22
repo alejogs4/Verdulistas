@@ -45,7 +45,7 @@
           <v-icon>person_add_disabled</v-icon>Ingresar
         </v-btn>
 
-        <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition" openOnHover>
+        <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition">
           <v-btn slot="activator" depressed v-if="logged">
             <v-chip>
               <v-avatar>
@@ -72,6 +72,16 @@
     <v-container>
       <nuxt />
     </v-container>
+
+    <v-snackbar v-model="snackbar" color="error" :timeout="2500">
+      Ha cerrado sesión
+      <v-icon dark>exit_to_app</v-icon>
+    </v-snackbar>
+
+    <v-footer class="pa-3" color="secondary">
+      <v-spacer></v-spacer>
+      <div>Verdulistas &copy; {{ new Date().getFullYear() }}</div>
+    </v-footer>
   </v-app>
 </template>
 
@@ -86,6 +96,7 @@ export default {
   },
   data() {
     return {
+      snackbar: false,
       logged: false,
       user: "",
       rolUser: "",
@@ -110,7 +121,8 @@ export default {
       this.$cookie.delete(config.cookie.rol);
       this.$cookie.delete(config.cookie.token);
       this.$router.push("/");
-      setTimeout(() => this.logged = false, 500);
+      this.snackbar = true;
+      setTimeout(() => (this.logged = false), 500);
     }
   }
 };

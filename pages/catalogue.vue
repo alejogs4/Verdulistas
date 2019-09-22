@@ -1,9 +1,9 @@
 <template>
   <div>
-    <!-- Catálogo -->
+    <!-- CATÁLOGO Y BARRAS -->
     <v-flex xs12>
       <v-toolbar class="auto" sticky color="primary">
-        <v-btn color="black" outline @click.stop="drawer2 = !drawer2">
+        <v-btn color="warning" @click.stop="drawer2 = !drawer2">
           <v-icon dark>youtube_searched_for</v-icon>Filtros
         </v-btn>
         <v-spacer></v-spacer>
@@ -28,7 +28,12 @@
                   </v-img>
                   <v-divider></v-divider>
                   <v-card-actions>
-                    <p>Precio: ${{product.price}}</p>
+                    <v-chip color="info" label outline dark>
+                      <v-avatar>
+                        <v-icon>local_atm</v-icon>
+                      </v-avatar>
+                      <strong>Precio: ${{product.price}}</strong>
+                    </v-chip>
                     <v-spacer></v-spacer>
                     <v-btn icon outline @click="showProduct(product)">
                       <v-icon>zoom_in</v-icon>
@@ -49,47 +54,54 @@
           </v-container>
         </v-card-text>
       </v-card>
+      <v-toolbar class="hidden-md-and-up">
+        <v-spacer></v-spacer>
+        <v-btn flat @click="scrollToTop()">
+          <v-icon small>arrow_upward</v-icon>
+          <i>Subir al principio</i>
+          <v-icon small>arrow_upward</v-icon>
+        </v-btn>
+        <v-spacer></v-spacer>
+      </v-toolbar>
     </v-flex>
 
     <!-- DESCRIPCION DE PRODUCTO -->
-    <v-container>
-      <v-dialog v-model="dialog" scrollable width="400" transition="scale-transition">
-        <v-card>
-          <v-img :src="selected.image" width="400">
-            <v-chip outline label dark>
-              <v-avatar>
-                <v-icon>label</v-icon>
-              </v-avatar>
-              <strong>{{selected.code}}</strong>
-            </v-chip>
-          </v-img>
-          <br />
-          <v-card-title class="warning">
-            <h1>{{selected.name}}</h1>
-          </v-card-title>
-          <v-card-text>{{selected.description}}</v-card-text>
-          <v-card-actions>
-            <v-chip color="info" label outline dark>
-              <v-avatar>
-                <v-icon>local_atm</v-icon>
-              </v-avatar>
-              <strong>Precio: ${{selected.price}}</strong>
-            </v-chip>
-            <v-spacer></v-spacer>
-            <v-btn v-if="logged" color="accent" @click="addProductToCart(selected)">
-              Añadir al carrito
-              <v-icon>add_shopping_cart</v-icon>
-            </v-btn>
-            <v-btn v-if="!logged" color="error" to="/login">
-              <v-icon left>person_add_disabled</v-icon>Iniciar sesión
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-    </v-container>
+    <v-dialog v-model="dialog" scrollable width="400" transition="scale-transition">
+      <v-card>
+        <v-img :src="selected.image" width="400">
+          <v-chip outline label dark>
+            <v-avatar>
+              <v-icon>label</v-icon>
+            </v-avatar>
+            <strong>{{selected.code}}</strong>
+          </v-chip>
+        </v-img>
+        <br />
+        <v-card-title class="warning">
+          <h1>{{selected.name}}</h1>
+        </v-card-title>
+        <v-card-text>{{selected.description}}</v-card-text>
+        <v-card-actions>
+          <v-chip color="info" label outline dark>
+            <v-avatar>
+              <v-icon>local_atm</v-icon>
+            </v-avatar>
+            <strong>Precio: ${{selected.price}}</strong>
+          </v-chip>
+          <v-spacer></v-spacer>
+          <v-btn v-if="logged" color="accent" @click="addProductToCart(selected)">
+            Añadir al carrito
+            <v-icon>add_shopping_cart</v-icon>
+          </v-btn>
+          <v-btn v-if="!logged" color="error" to="/login">
+            <v-icon left>person_add_disabled</v-icon>Iniciar sesión
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
 
     <!-- FILTROS -->
-    <v-layout wrap style="height: 200px;">
+    <v-layout v-if="drawer2" wrap style="height: 200px;">
       <v-navigation-drawer v-model="drawer2" absolute left temporary>
         <v-list class="pa-1">
           <v-list-tile avatar tag="div" class="warning">
@@ -133,7 +145,7 @@
     </v-layout>
 
     <!-- CARRITO -->
-    <v-layout wrap style="height: 200px;">
+    <v-layout v-if="drawer" wrap style="height: 200px;">
       <v-navigation-drawer v-model="drawer" absolute right temporary>
         <v-list class="pa-1">
           <v-list-tile avatar tag="div" class="primary">
@@ -174,10 +186,10 @@
                 color="error"
                 @click="cleanCart(item.id, item.product.id)"
               >
-                <v-icon small>arrow_downward</v-icon>
+                <v-icon small>exposure_neg_1</v-icon>
               </v-btn>
               <!-- <v-btn icon small outline color="success">
-                <v-icon small>arrow_upward</v-icon>
+                <v-icon small>exposure_plus_1</v-icon>
               </v-btn>-->
             </v-list-tile>
           </template>
@@ -196,65 +208,68 @@
     </v-layout>
 
     <!-- CONFIRMACIÓN DE COMPRA -->
-    <v-dialog v-model="dialogCompra" scrollable max-width="550">
+    <v-dialog v-model="dialogCompra" scrollable persistent max-width="550">
       <v-card>
         <v-card-title class="primary">
           <h1>Confirmar Pedido</h1>
         </v-card-title>
         <v-card-text>
           <v-container>
-            <table
-              class="mytable"
-              id="table1"
-              style="border: 0.3px solid black;
+            <center>
+              <table
+                class="mytable"
+                id="table1"
+                style="border: 0.3px solid black;
             border-collapse: collapse;
             vertical-align: center;"
-            >
-              <tr>
-                <td
-                  v-for="head in headers"
-                  :key="head.value"
-                  style="background-color:rgb(235,241,222);border:0.2px solid black; text-align: center; padding: 5px;"
-                >
-                  <b>{{head.title}}</b>
-                </td>
-              </tr>
-              <tr
-                v-for="item in cart"
-                :key="item.id"
-                style="background-color: rgb(200,200,200); color:black; border:0.2px solid black;"
               >
-                <td style="border:0.2px solid black; padding: 5px;">{{ item.product.name }}</td>
-                <td style="border:0.2px solid black; text-align: center;">{{ item.quantity }}</td>
-                <td
-                  style="border:0.2px solid black; text-align: right; padding: 5px;"
-                >${{ item.product.price }}</td>
-                <td style="border:0.2px solid black; text-align: right; padding: 5px;">
-                  <b>${{ item.quantity*item.product.price }}</b>
-                </td>
-              </tr>
-              <tr style="height: 20px;"></tr>
-              <tr
-                style="background-color: rgb(200,200,200); color:black; border:0.2px solid black; text-align: center; padding: 5px;"
-              >
-                <td>
-                  <b>Total de pedido</b>
-                </td>
-                <td></td>
-                <td></td>
-                <td
-                  style="background-color: rgb(235,241,222); color:black; border:0.2px solid black; padding: 5px;"
+                <tr>
+                  <td
+                    v-for="head in headers"
+                    :key="head.value"
+                    style="background-color:rgb(235,241,222);border:0.2px solid black; text-align: center; padding: 5px;"
+                  >
+                    <b>{{head.title}}</b>
+                  </td>
+                </tr>
+                <tr
+                  v-for="item in cart"
+                  :key="item.id"
+                  style="background-color: rgb(200,200,200); color:black; border:0.2px solid black;"
                 >
-                  <b>${{totalPrice}}</b>
-                </td>
-              </tr>
-            </table>
+                  <td style="border:0.2px solid black; padding: 5px;">{{ item.product.name }}</td>
+                  <td style="border:0.2px solid black; text-align: center;">{{ item.quantity }}</td>
+                  <td
+                    style="border:0.2px solid black; text-align: right; padding: 5px;"
+                  >${{ item.product.price }}</td>
+                  <td style="border:0.2px solid black; text-align: right; padding: 5px;">
+                    <b>${{ item.quantity*item.product.price }}</b>
+                  </td>
+                </tr>
+                <tr style="height: 20px;"></tr>
+                <tr
+                  style="background-color: rgb(200,200,200); color:black; border:0.2px solid black; text-align: center; padding: 5px;"
+                >
+                  <td>
+                    <b>Total de pedido</b>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td
+                    style="background-color: rgb(235,241,222); color:black; border:0.2px solid black; padding: 5px;"
+                  >
+                    <b>${{totalPrice}}</b>
+                  </td>
+                </tr>
+              </table>
+            </center>
           </v-container>
           <v-container class="secondary">
             <h2>Información de pedido</h2>
             <v-form ref="form" v-model="valid">
               <v-text-field
                 v-model="address"
+                prepend-icon="store"
                 type="text"
                 :rules="rules"
                 label="Dirección de entrega"
@@ -262,6 +277,7 @@
               ></v-text-field>
               <v-text-field
                 v-model="phone"
+                prepend-icon="local_phone"
                 type="text"
                 :rules="phoneRules"
                 label="Teléfono de contacto"
@@ -289,6 +305,12 @@
         </v-alert>
       </v-card>
     </v-dialog>
+
+    <!-- NOTIFICACION -->
+    <v-snackbar v-model="snackbar" color="success" :timeout="2000">
+      Producto añadido al carrito
+      <v-icon dark>add_shopping_cart</v-icon>
+    </v-snackbar>
   </div>
 </template>
 
@@ -313,6 +335,7 @@ export default {
       dialog: false,
       dialogCompra: false,
       loading: null,
+      snackbar: false,
       drawer: null,
       drawer2: null,
       items: [
@@ -407,6 +430,7 @@ export default {
           }
           this.quantity = this.cart.reduce((a, b) => a + b.quantity, 0);
           this.cartId = _product.cart_id;
+          this.snackbar = true;
         });
     },
     cleanCart(cartId, productId) {
@@ -515,6 +539,9 @@ export default {
         this.totalPrice += element.product.price * element.quantity;
       });
       this.dialogCompra = true;
+    },
+    scrollToTop() {
+      window.scrollTo(0, 0);
     }
   }
 };

@@ -2,7 +2,7 @@
   <v-container fluid fill-height class="responsive">
     <v-layout align-center justify-center>
       <v-flex xs12 md8 lg6>
-        <v-tabs fixed-tabs light slider-color="warning">
+        <v-tabs light slider-color="warning">
           <v-tab active>
             <v-btn :color="colorL" @click="setTab('login')" depressed outline>
               <v-icon>how_to_reg</v-icon>Iniciar sesión
@@ -34,6 +34,7 @@
                 <v-form ref="form" v-if="title == 'Iniciar sesión'" v-model="valid">
                   <v-text-field
                     v-model="emailLog"
+                    prepend-icon="email"
                     type="email"
                     :rules="emailRules"
                     label="E-mail"
@@ -41,6 +42,7 @@
                   ></v-text-field>
                   <v-text-field
                     v-model="passwordLog"
+                    prepend-icon="lock"
                     type="password"
                     :rules="rules"
                     label="Contraseña"
@@ -56,9 +58,17 @@
                 </v-form>
 
                 <v-form ref="form" v-if="title == 'Registrarse'" v-model="valid">
-                  <v-text-field v-model="name" type="text" :rules="rules" label="Nombre" required></v-text-field>
+                  <v-text-field
+                    v-model="name"
+                    prepend-icon="person"
+                    type="text"
+                    :rules="rules"
+                    label="Nombre"
+                    required
+                  ></v-text-field>
                   <v-text-field
                     v-model="lastname"
+                    prepend-icon="supervisor_account"
                     type="text"
                     :rules="rules"
                     label="Apellido"
@@ -66,6 +76,7 @@
                   ></v-text-field>
                   <v-text-field
                     v-model="email"
+                    prepend-icon="email"
                     type="email"
                     :rules="emailRules"
                     label="E-mail"
@@ -73,6 +84,7 @@
                   ></v-text-field>
                   <v-text-field
                     v-model="password"
+                    prepend-icon="lock"
                     type="password"
                     :rules="passwordRules"
                     label="Contraseña"
@@ -80,6 +92,7 @@
                   ></v-text-field>
                   <v-text-field
                     v-model="confpassword"
+                    prepend-icon="lock_open"
                     type="password"
                     :rules="passwordRules"
                     label="Confirmar contraseña"
@@ -96,16 +109,16 @@
               </v-card-text>
               <v-progress-linear color="info" indeterminate v-if="loading"></v-progress-linear>
               <v-alert :value="error" color="error">
-                <h4>
+                <h3>
                   <v-icon dark left>error</v-icon>
                   <i>{{ errorText }}</i>
-                </h4>
+                </h3>
               </v-alert>
               <v-alert :value="success" color="info">
-                <h4>
+                <h3>
                   <v-icon dark left>assignment_turned_in</v-icon>
                   <i>{{ successText }}</i>
-                </h4>
+                </h3>
               </v-alert>
             </v-card>
           </v-flex>
@@ -230,6 +243,7 @@ export default {
           this.$cookie.set(config.cookie.rol, this.user.admin);
           this.loading = false;
           this.success = true;
+          this.error = false;
           this.successText = `Bienvenido a Verdulistas, ${this.user.name}!`;
           setTimeout(() => this.$router.push("/catalogue"), 1500);
         }

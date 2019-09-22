@@ -24,8 +24,10 @@
     </v-container>
   </div>
 </template>
+
 <script>
 export default {
+  layout: "default",
   props: ["error"]
 };
 </script>
