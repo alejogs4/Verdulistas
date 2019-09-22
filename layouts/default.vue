@@ -1,16 +1,40 @@
 <template>
   <v-app>
-    <v-toolbar class="mx-lg-auto" sticky>
+    <v-toolbar class="auto" sticky>
       <v-toolbar-items>
-        <v-btn to="/" large depressed color="primary">
+        <v-btn to="/" large depressed color="primary" class="hidden-sm-and-down">
           <v-avatar>
             <img src="../assets/img/icono.png" alt="avatar" />
           </v-avatar>Verdulistas
         </v-btn>
+
+        <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition">
+          <v-btn slot="activator" class="hidden-md-and-up" large depressed color="primary">
+            <v-avatar>
+              <img src="../assets/img/icono.png" alt="avatar" />
+            </v-avatar>Verdulistas
+          </v-btn>
+          <v-card>
+            <v-list dense>
+              <v-list-tile to="/">
+                <v-icon left>home</v-icon>Inicio
+              </v-list-tile>
+              <v-list-tile to="/catalogue">
+                <v-icon left>widgets</v-icon>Catálogo
+              </v-list-tile>
+              <v-list-tile to="/recipes">
+                <v-icon left>receipt</v-icon>Recetas
+              </v-list-tile>
+              <v-list-tile to="/points">
+                <v-icon left>important_devices</v-icon>VerduPoints
+              </v-list-tile>
+            </v-list>
+          </v-card>
+        </v-menu>
       </v-toolbar-items>
 
-      <v-spacer />
-      <v-toolbar-items>
+      <v-spacer class="hidden-sm-and-down"></v-spacer>
+      <v-toolbar-items class="hidden-sm-and-down">
         <v-btn to="/catalogue" large depressed>Catálogo</v-btn>
         <v-btn to="/recipes" large depressed>Recetas</v-btn>
         <v-btn to="/points" large depressed>VerduPoints</v-btn>
@@ -85,8 +109,8 @@ export default {
       this.$cookie.delete(config.cookie.username);
       this.$cookie.delete(config.cookie.rol);
       this.$cookie.delete(config.cookie.token);
-      this.logged = false;
       this.$router.push("/");
+      setTimeout(() => this.logged = false, 500);
     }
   }
 };

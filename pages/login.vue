@@ -1,7 +1,7 @@
 <template>
   <v-container fluid fill-height class="responsive">
     <v-layout align-center justify-center>
-      <v-flex xs8>
+      <v-flex xs12 md8 lg6>
         <v-tabs fixed-tabs light slider-color="warning">
           <v-tab active>
             <v-btn :color="colorL" @click="setTab('login')" depressed outline>

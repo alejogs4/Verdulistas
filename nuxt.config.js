@@ -12,7 +12,7 @@ module.exports = {
       { hid: "description", name: "description", content: "App web para Verdulistas" }
     ],
     link: [
-      { rel: "icon", href: "/assets/img/icono.png" },
+      { rel: "icon", href: "./assets/img/icono.png" },
       {
         rel: "stylesheet",
         href:

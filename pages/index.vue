@@ -7,9 +7,12 @@
             <v-card color="info" class="white--text" fill-height>
               <v-card-title primary-title>
                 <v-btn to="/catalogue" large flat dark>
-                  <h1>
-                    <strong>¡Visita nuestro catálogo!</strong>
-                  </h1>
+                  <center class="hidden-sm-and-down">
+                    <h1>¡Visita nuestro catálogo!</h1>
+                  </center>
+                  <center class="hidden-md-and-up">
+                    <h3>¡Visita nuestro catálogo!</h3>
+                  </center>
                 </v-btn>
               </v-card-title>
               <v-card-text>
@@ -20,18 +23,25 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn to="/catalogue" flat dark>Haz click aquí para ver todos nuestros productos</v-btn>
+                <v-btn to="/catalogue" large flat dark>
+                  <center class="hidden-sm-and-down">
+                    <v-icon left>visibility</v-icon>Haz click para ver todos nuestros productos
+                  </center>
+                  <center class="hidden-md-and-up">
+                    <v-icon left>visibility</v-icon>Ver todos los productos
+                  </center>
+                </v-btn>
               </v-card-actions>
             </v-card>
           </v-flex>
-          <v-flex xs4>
+          <v-flex xs12 md4>
             <v-card color="secondary" outline>
               <v-img src="https://i.imgur.com/VlBmu6I.png" block></v-img>
             </v-card>
           </v-flex>
         </v-layout>
         <v-layout row wrap>
-          <v-flex xs2>
+          <v-flex md2 class="hidden-sm-and-down">
             <v-card color="secondary" outline>
               <v-img src="https://i.imgur.com/jGxwEbH.png"></v-img>
             </v-card>
@@ -40,9 +50,12 @@
             <v-card color="primary" class="white--text" fill-height>
               <v-card-title primary-title>
                 <v-btn large flat dark>
-                  <h1>
-                    <strong>¡Descarga nuestra app móvil!</strong>
-                  </h1>
+                  <center class="hidden-sm-and-down">
+                    <h1>¡Descarga nuestra APP MOVIL!</h1>
+                  </center>
+                  <center class="hidden-md-and-up">
+                    <h3>¡Descarga nuestra APP!</h3>
+                  </center>
                 </v-btn>
               </v-card-title>
               <v-card-text>
@@ -63,6 +76,11 @@
                   <v-icon large left>cloud_download</v-icon>Haz click aquí para descargar
                 </v-btn>
               </v-card-actions>
+            </v-card>
+          </v-flex>
+          <v-flex xs12 class="hidden-md-and-up">
+            <v-card color="secondary" outline>
+              <v-img src="https://i.imgur.com/jGxwEbH.png"></v-img>
             </v-card>
           </v-flex>
         </v-layout>
