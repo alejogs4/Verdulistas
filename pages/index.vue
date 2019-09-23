@@ -25,10 +25,10 @@
                 <v-spacer></v-spacer>
                 <v-btn to="/catalogue" large flat dark>
                   <center class="hidden-sm-and-down">
-                    <v-icon left>visibility</v-icon>Haz click para ver todos nuestros productos
+                    <v-icon left>widgets</v-icon>Haz click para ver todos nuestros productos
                   </center>
                   <center class="hidden-md-and-up">
-                    <v-icon left>visibility</v-icon>Ver todos los productos
+                    <v-icon left>widgets</v-icon>Ver todos los productos
                   </center>
                 </v-btn>
               </v-card-actions>

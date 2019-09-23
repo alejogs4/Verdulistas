@@ -137,7 +137,7 @@
             Limpiar
             <v-icon>restore</v-icon>
           </v-btn>
-          <v-btn color="info" @click="orderPrice()">
+          <v-btn color="warning" @click="orderPrice()">
             <v-icon>policy</v-icon>Aplicar
           </v-btn>
         </v-list-tile>
