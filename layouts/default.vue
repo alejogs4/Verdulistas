@@ -103,7 +103,6 @@
 import config from "@/assets/js/config";
 
 export default {
-  components: {},
   beforeMount() {
     this.getUser();
   },
@@ -116,14 +115,11 @@ export default {
       entityUser: null
     };
   },
-  computed: {},
-  watch: {},
   methods: {
     getUser() {
-      var username = config.cookie.username;
-      var rol = config.cookie.roles;
-      this.rolUser = this.$cookie.get(rol);
-      this.user = this.$cookie.get(username);
+      // var rol = config.cookie.roles;
+      // this.rolUser = this.$cookie.get(rol);
+      this.user = this.$cookie.get(config.cookie.username);
       if (this.user) {
         this.logged = true;
       }
@@ -135,7 +131,8 @@ export default {
       this.$cookie.delete(config.cookie.token);
       this.$router.push("/");
       this.snackbar = true;
-      setTimeout(() => (this.logged = false), 500);
+      this.logged = false
+      setTimeout(() => (location.reload()), 200);
     }
   }
 };

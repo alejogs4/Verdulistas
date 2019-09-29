@@ -3,9 +3,32 @@
     <!-- CATÁLOGO Y BARRAS -->
     <v-flex xs12>
       <v-toolbar class="auto" sticky color="primary">
-        <v-btn color="warning" @click.stop="drawer2 = !drawer2">
+        <v-btn color="warning" @click.stop="drawer2 = !drawer2" class="hidden-md-and-up">
           <v-icon dark>youtube_searched_for</v-icon>Filtros
         </v-btn>
+        <v-layout class="hidden-sm-and-down">
+          <v-text-field
+            solo
+            v-model="nombreFiltro"
+            prepend-inner-icon="keyboard"
+            type="text"
+            label="Buscar por nombre"
+          ></v-text-field>
+          <v-text-field
+            solo
+            v-model="precioFiltro"
+            prepend-inner-icon="attach_money"
+            type="number"
+            :min="0"
+            :step="500"
+            label="Precio máximo"
+          ></v-text-field>
+          <v-btn class="hidden-sm-and-down" icon color="white" @click="limpiarFiltros()">
+            <v-icon>restore</v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
+        </v-layout>
+
         <v-spacer></v-spacer>
         <v-btn v-if="logged" dark color="info" @click.stop="drawer = !drawer">
           <v-avatar v-if="quantity > 0" size="25px" color="warning">
@@ -119,29 +142,35 @@
             </v-list-tile-action>
           </v-list-tile>
         </v-list>
-        <v-list two-line dense class="secondary">
-          <template v-for="item in items">
-            <v-list-tile :key="item.title" avatar>
-              <v-list-tile-avatar>
-                <v-icon>{{item.icon}}</v-icon>
-              </v-list-tile-avatar>
-
-              <v-list-tile-content>
-                <v-list-tile-title v-html="item.title"></v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
-        </v-list>
+        <v-container>
+          <v-form ref="form" v-model="valid">
+            <v-text-field
+              v-model="nombreFiltro"
+              prepend-icon="keyboard"
+              type="text"
+              label="Buscar por nombre"
+            ></v-text-field>
+            <v-text-field
+              v-model="precioFiltro"
+              prepend-icon="attach_money"
+              type="number"
+              :min="0"
+              :step="500"
+              label="Precio máximo"
+            ></v-text-field>
+          </v-form>
+        </v-container>
         <v-divider light></v-divider>
-        <v-list-tile>
-          <v-btn outline @click="cleanAllCart()">
-            Limpiar
+        <center>
+          <v-btn outline @click="limpiarFiltros()">
+            Limpiar filtros
             <v-icon>restore</v-icon>
           </v-btn>
-          <v-btn color="warning" @click="orderPrice()">
-            <v-icon>policy</v-icon>Aplicar
+          <v-btn color="warning" outline @click.stop="drawer2 = !drawer2">
+            VER
+            <v-icon>subject</v-icon>
           </v-btn>
-        </v-list-tile>
+        </center>
       </v-navigation-drawer>
     </v-layout>
 
@@ -196,7 +225,7 @@
           </template>
         </v-list>
         <v-divider light></v-divider>
-        <v-list-tile>
+        <center>
           <v-btn color="success" :disabled="quantity == 0" @click="orderPrice()">
             <v-icon>shop</v-icon>Comprar
           </v-btn>
@@ -204,7 +233,7 @@
             Vaciar
             <v-icon>remove_shopping_cart</v-icon>
           </v-btn>
-        </v-list-tile>
+        </center>
       </v-navigation-drawer>
     </v-layout>
 
@@ -280,8 +309,9 @@
                 v-model="phone"
                 prepend-icon="local_phone"
                 type="text"
+                mask="phone"
                 :rules="phoneRules"
-                label="Teléfono de contacto"
+                label="Teléfono celular"
                 required
               ></v-text-field>
             </v-form>
@@ -357,10 +387,8 @@ export default {
       snackbar: false,
       drawer: null,
       drawer2: null,
-      items: [
-        { title: "Nombre", icon: "keyboard" },
-        { title: "Precio", icon: "attach_money" }
-      ],
+      nombreFiltro: "",
+      precioFiltro: "",
       headers: [
         { title: "Producto", value: "name" },
         { title: "Cantidad", value: "quantity" },
@@ -377,6 +405,7 @@ export default {
       quantity: 0,
       cartId: -1,
       products: [],
+      allProducts: [],
       selected: {},
       totalPrice: 0,
       address: "",
@@ -384,7 +413,11 @@ export default {
     };
   },
   methods: {
-    limpiarFiltros() {},
+    limpiarFiltros() {
+      this.products = this.allProducts;
+      this.nombreFiltro = "";
+      this.precioFiltro = "";
+    },
     getProducts() {
       this.loading = true;
       axios({
@@ -399,6 +432,7 @@ export default {
         .then(result => {
           this.loading = false;
           this.products = result.products;
+          this.allProducts = result.products;
           if (result.userCart) {
             this.cartId = result.userCart.id;
             this.cart = result.userCart.cartItems;
@@ -559,6 +593,26 @@ export default {
     },
     scrollToTop() {
       window.scrollTo(0, 0);
+    }
+  },
+  watch: {
+    nombreFiltro() {
+      if (this.nombreFiltro != "") {
+        this.products = this.allProducts.filter(producto =>
+          producto.name.toLowerCase().includes(this.nombreFiltro.toLowerCase())
+        );
+      } else {
+        this.products = this.allProducts;
+      }
+    },
+    precioFiltro() {
+      if (this.precioFiltro != 0) {
+        this.products = this.allProducts.filter(
+          producto => producto.price >= this.precioFiltro
+        );
+      } else {
+        this.products = this.allProducts;
+      }
     }
   }
 };
