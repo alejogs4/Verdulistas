@@ -21,30 +21,28 @@
             <v-layout wrap>
               <v-flex v-for="product in products" :key="product.id">
                 <v-card>
-                  <v-img :src="product.image" width="300px">
-                    <v-chip dark class="warning" @click="showProduct(product)">
-                      <strong>{{product.name}}</strong>
-                    </v-chip>
-                  </v-img>
+                  <center>
+                    <v-img :src="product.image" width="280px" @click="showProduct(product)">
+                      <v-chip dark class="warning">
+                        <strong>{{product.name}}</strong>
+                      </v-chip>
+                    </v-img>
+                  </center>
                   <v-divider></v-divider>
                   <v-card-actions>
-                    <v-chip color="info" label outline dark>
+                    <v-chip color="info" label outline dark @click="showProduct(product)">
                       <v-avatar>
                         <v-icon>local_atm</v-icon>
                       </v-avatar>
                       <strong>Precio: ${{product.price}}</strong>
                     </v-chip>
                     <v-spacer></v-spacer>
-                    <v-btn icon outline @click="showProduct(product)">
-                      <v-icon>zoom_in</v-icon>
+                    <v-btn outline color="error" v-if="!logged" @click="dialogLogin = true">
+                      Comprar
+                      <v-icon>add_shopping_cart</v-icon>
                     </v-btn>
-                    <v-btn
-                      v-if="logged"
-                      icon
-                      outline
-                      color="accent"
-                      @click="addProductToCart(product)"
-                    >
+                    <v-btn outline color="primary" v-if="logged" @click="addProductToCart(product)">
+                      Agregar
                       <v-icon>add_shopping_cart</v-icon>
                     </v-btn>
                   </v-card-actions>
@@ -68,14 +66,16 @@
     <!-- DESCRIPCION DE PRODUCTO -->
     <v-dialog v-model="dialog" scrollable width="400" transition="scale-transition">
       <v-card>
-        <v-img :src="selected.image" width="400">
-          <v-chip outline label dark>
-            <v-avatar>
-              <v-icon>label</v-icon>
-            </v-avatar>
-            <strong>{{selected.code}}</strong>
-          </v-chip>
-        </v-img>
+        <center>
+          <v-img :src="selected.image" width="350">
+            <v-chip outline label dark>
+              <v-avatar>
+                <v-icon>label</v-icon>
+              </v-avatar>
+              <strong>{{selected.code}}</strong>
+            </v-chip>
+          </v-img>
+        </center>
         <br />
         <v-card-title class="warning">
           <h1>{{selected.name}}</h1>
@@ -93,8 +93,9 @@
             Añadir al carrito
             <v-icon>add_shopping_cart</v-icon>
           </v-btn>
-          <v-btn v-if="!logged" color="error" to="/login">
-            <v-icon left>person_add_disabled</v-icon>Iniciar sesión
+          <v-btn v-if="!logged" color="error" @click="dialogLogin = true">
+            Comprar producto
+            <v-icon>add_shopping_cart</v-icon>
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -288,13 +289,13 @@
         </v-card-text>
         <v-divider light></v-divider>
         <v-card-actions>
-          <v-btn class="success" :disabled="quantity == 0 || !valid" @click="generateOrder()">
-            <v-icon>done_all</v-icon>Confirmar
-          </v-btn>
-          <v-spacer></v-spacer>
           <v-btn class="error" @click="dialogCompra = false">
             Cancelar
             <v-icon>clear</v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn class="success" :disabled="quantity == 0 || !valid" @click="generateOrder()">
+            <v-icon>done_all</v-icon>Confirmar
           </v-btn>
         </v-card-actions>
         <v-alert :value="order" color="info">
@@ -311,6 +312,23 @@
       Producto añadido al carrito
       <v-icon dark>add_shopping_cart</v-icon>
     </v-snackbar>
+
+    <!-- DIALOGO DE INICIAR SESION -->
+    <v-dialog v-model="dialogLogin" max-width="300">
+      <v-card>
+        <v-card-title class="headline primary">
+          <center>
+            <strong>Quieres comprar en Verdulistas?</strong>
+          </center>
+        </v-card-title>
+        <v-card-text>Para comprar productos de nuestra tienda, debes primero estar registrado y loggeado.</v-card-text>
+        <v-card-actions>
+          <v-btn color="info" flat to="/register">REGISTRARSE</v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="info" flat to="/login">INGRESAR</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -322,9 +340,9 @@ const axios = require("axios");
 export default {
   layout: "default",
   components: {},
-  mounted() {
+  beforeMount() {
     this.getUser();
-    this.getData();
+    this.getProducts();
   },
   data() {
     return {
@@ -334,6 +352,7 @@ export default {
       logged: false,
       dialog: false,
       dialogCompra: false,
+      dialogLogin: false,
       loading: null,
       snackbar: false,
       drawer: null,
@@ -364,11 +383,9 @@ export default {
       phone: ""
     };
   },
-  computed: {},
-  watch: {},
   methods: {
     limpiarFiltros() {},
-    getData() {
+    getProducts() {
       this.loading = true;
       axios({
         url: config.api.url,

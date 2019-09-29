@@ -10,6 +10,7 @@
 
         <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition">
           <v-btn slot="activator" class="hidden-md-and-up" large depressed color="primary">
+            <v-icon left>dehaze</v-icon>
             <v-avatar>
               <img src="../assets/img/icono.png" alt="avatar" />
             </v-avatar>Verdulistas
@@ -41,9 +42,21 @@
       </v-toolbar-items>
       <v-spacer />
       <v-toolbar-items>
-        <v-btn v-if="!logged" to="/login" depressed>
-          <v-icon>person_add_disabled</v-icon>Ingresar
-        </v-btn>
+        <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition">
+          <v-btn slot="activator" depressed v-if="!logged">
+            <v-icon>person_add_disabled</v-icon>Ingresar
+          </v-btn>
+          <v-card>
+            <v-list dense>
+              <v-btn to="/login" small depressed outline>
+                <v-icon>how_to_reg</v-icon>Iniciar sesión
+              </v-btn>
+              <v-btn to="/register" small depressed outline>
+                <v-icon>add_circle_outline</v-icon>Registrarse
+              </v-btn>
+            </v-list>
+          </v-card>
+        </v-menu>
 
         <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition">
           <v-btn slot="activator" depressed v-if="logged">

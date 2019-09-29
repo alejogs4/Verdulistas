@@ -5,7 +5,7 @@
         <v-tabs light slider-color="warning">
           <v-tab active>
             <v-btn color="warning" depressed outline>
-              <v-icon>how_to_reg</v-icon>Iniciar sesión
+              <v-icon>add_circle_outline</v-icon>Registrarse
             </v-btn>
           </v-tab>
           <v-spacer></v-spacer>
@@ -16,19 +16,34 @@
           </v-tab>
         </v-tabs>
         <v-divider></v-divider>
-
         <div>
           <v-flex xs12 sm12 md12 class="pb-3">
             <v-card elevation="15">
               <v-card-title class="primary">
                 <h1 class="text-center">
-                  <strong>Iniciar sesión</strong>
+                  <strong>Registrarse</strong>
                 </h1>
               </v-card-title>
               <v-card-text>
                 <v-form ref="form" v-model="valid">
                   <v-text-field
-                    v-model="emailLog"
+                    v-model="name"
+                    prepend-icon="person"
+                    type="text"
+                    :rules="rules"
+                    label="Nombre"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="lastname"
+                    prepend-icon="supervisor_account"
+                    type="text"
+                    :rules="rules"
+                    label="Apellido"
+                    required
+                  ></v-text-field>
+                  <v-text-field
+                    v-model="email"
                     prepend-icon="email"
                     type="email"
                     :rules="emailRules"
@@ -36,16 +51,24 @@
                     required
                   ></v-text-field>
                   <v-text-field
-                    v-model="passwordLog"
+                    v-model="password"
                     prepend-icon="lock"
                     type="password"
-                    :rules="rules"
+                    :rules="passwordRules"
                     label="Contraseña"
                     required
                   ></v-text-field>
+                  <v-text-field
+                    v-model="confpassword"
+                    prepend-icon="lock_open"
+                    type="password"
+                    :rules="passwordRules"
+                    label="Confirmar contraseña"
+                    required
+                  ></v-text-field>
                   <center>
-                    <v-btn :disabled="!valid" class="success" @click="login()">
-                      <v-icon>done_all</v-icon>Iniciar sesión
+                    <v-btn :disabled="!valid" class="success" @click="register()">
+                      <v-icon>save</v-icon>Registrarse
                     </v-btn>
                     <v-btn @click="limpiarCampos()" outline>
                       <v-icon>restore</v-icon>LIMPIAR CAMPOS
@@ -57,7 +80,7 @@
             </v-card>
             <br>
             <center>
-              <v-btn to="/register" large outline color="black">No tienes cuenta? <br> Regístrate aquí</v-btn>
+              <v-btn to="/login" large outline color="black">Ya tienes cuenta? <br> Ingresa aquí</v-btn>
             </center>
           </v-flex>
         </div>
@@ -84,8 +107,11 @@ export default {
     return {
       loading: false,
       valid: false,
-      emailLog: "",
-      passwordLog: "",
+      name: "",
+      lastname: "",
+      email: "",
+      password: "",
+      confpassword: "",
       emailRules: [
         v => !!v || "Ingrese e-mail",
         v => /.+@.+\..+/.test(v) || "E-mail debe ser válido"
@@ -107,55 +133,61 @@ export default {
   methods: {
     limpiarCampos() {
       let self = this;
-      self.emailLog = "";
-      self.passwordLog = "";
+      self.name = "";
+      self.lastname = "";
+      self.email = "";
+      self.password = "";
+      self.confpassword = "";
     },
 
-    login() {
-      this.loading = true;
-      axios({
-        url: config.api.url,
-        method: "POST",
-        data: {
-          query: `
-            mutation {
-              signIn (email:"${this.emailLog}", password: "${
-            this.passwordLog
-          }") {
-                user {
-                  id,
-                  name,
-                  lastname,
-                  email,
-                  admin
-                },
-                token
+    register() {
+      if (this.password != this.confpassword) {
+        this.error = true;
+        this.errorText = "Las contraseñas deben coincidir.";
+        this.loading = false;
+      } else {
+        this.loading = true;
+        var user = {
+          name: this.name,
+          lastname: this.lastname,
+          email: this.email,
+          password: this.password
+        };
+        axios({
+          url: config.api.url,
+          method: "POST",
+          data: {
+            query: `
+            mutation register($user: UserInput!) {
+              signUp (user: $user) {
+                email
               }
             }
-          `
-        }
-      }).then(result => {
-        if (result.data.errors) {
-          this.snackbar = true;
-          this.snackColor = "error";
-          this.snackIcon = "mood_bad";
-          this.snackText = "Email o contraseña incorrectos, intente de nuevo.";
-          this.loading = false;
-        } else {
-          this.token = result.data.data.signIn.token;
-          this.user = result.data.data.signIn.user;
-          this.$cookie.set(config.cookie.token, this.token);
-          this.$cookie.set(config.cookie.userid, this.user.id);
-          this.$cookie.set(config.cookie.username, this.user.name);
-          this.$cookie.set(config.cookie.rol, this.user.admin);
-          this.loading = false;
-          this.snackbar = true;
-          this.snackColor = "success";
-          this.snackIcon = "mood";
-          this.snackText = `Bienvenido a Verdulistas, ${this.user.name}!`;
-          setTimeout(() => this.$router.push("/catalogue"), 1500);
-        }
-      });
+          `,
+            variables: {
+              user
+            }
+          }
+        }).then(result => {
+          if (result.data.errors) {
+            this.snackbar = true;
+            this.snackColor = "error";
+            this.snackIcon = "mood_bad";
+            this.snackText =
+              "Error en el registro, posiblemente ya tenga una cuenta registrada";
+            this.loading = false;
+          } else {
+            this.loading = false;
+            this.success = true;
+            this.snackbar = true;
+            this.snackColor = "success";
+            this.snackIcon = "mood";
+            var email = result.data.data.signUp.email;
+            this.snackText = `Registro completo! Ahora puedes iniciar sesión con: ${email}`;
+            setTimeout(() => this.$router.push('/login'), 1000);
+          }
+        });
+      }
     },
 
     getUser() {
