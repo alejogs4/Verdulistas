@@ -5,14 +5,14 @@ module.exports = {
   ** Headers of the page
   */
   head: {
-    title: "Verdulistas",
+    title: "Verdulistas | Tienda Online",
     meta: [
       { charset: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { hid: "description", name: "description", content: "App web para Verdulistas" }
     ],
     link: [
-      { rel: "icon", href: "./assets/img/icono.png" },
+      { rel: "icon", href: "icono.png" },
       {
         rel: "stylesheet",
         href:

@@ -370,7 +370,7 @@ const axios = require("axios");
 export default {
   layout: "default",
   components: {},
-  beforeMount() {
+  mounted() {
     this.getUser();
     this.getProducts();
   },
