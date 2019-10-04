@@ -7,6 +7,10 @@
           <v-icon dark>youtube_searched_for</v-icon>Filtros
         </v-btn>
         <v-layout class="hidden-sm-and-down">
+          <v-btn class="hidden-sm-and-down" icon color="white" @click="limpiarFiltros()">
+            <v-icon>restore</v-icon>
+          </v-btn>
+          <v-spacer></v-spacer>
           <v-text-field
             solo
             v-model="nombreFiltro"
@@ -14,6 +18,7 @@
             type="text"
             label="Buscar por nombre"
           ></v-text-field>
+          <v-spacer></v-spacer>
           <v-text-field
             solo
             v-model="precioFiltro"
@@ -23,9 +28,6 @@
             :step="500"
             label="Precio máximo"
           ></v-text-field>
-          <v-btn class="hidden-sm-and-down" icon color="white" @click="limpiarFiltros()">
-            <v-icon>restore</v-icon>
-          </v-btn>
           <v-spacer></v-spacer>
         </v-layout>
 
@@ -79,7 +81,7 @@
         <v-spacer></v-spacer>
         <v-btn flat @click="scrollToTop()">
           <v-icon small>arrow_upward</v-icon>
-          <i>Subir al principio</i>
+          <i>Subir</i>
           <v-icon small>arrow_upward</v-icon>
         </v-btn>
         <v-spacer></v-spacer>
@@ -226,7 +228,7 @@
         </v-list>
         <v-divider light></v-divider>
         <center>
-          <v-btn color="success" :disabled="quantity == 0" @click="orderPrice()">
+          <v-btn color="success" depressed :disabled="quantity == 0" @click="orderPrice()">
             <v-icon>shop</v-icon>Comprar
           </v-btn>
           <v-btn outline @click="cleanAllCart()">
