@@ -608,7 +608,7 @@ export default {
     precioFiltro() {
       if (this.precioFiltro != 0) {
         this.products = this.allProducts.filter(
-          producto => producto.price >= this.precioFiltro
+          producto => (producto.price < this.precioFiltro)
         );
       } else {
         this.products = this.allProducts;

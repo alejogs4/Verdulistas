@@ -58,8 +58,8 @@
           </v-card>
         </v-menu>
 
-        <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition">
-          <v-btn slot="activator" depressed v-if="logged">
+        <v-menu v-if="logged" offset-y content-class="dropdown-menu" transition="slide-y-transition">
+          <v-btn slot="activator" depressed>
             <v-chip>
               <v-avatar>
                 <v-icon color="primary">account_circle</v-icon>
