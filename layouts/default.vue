@@ -72,6 +72,9 @@
               <v-btn to="/profile" color="info" depressed outline>
                 <v-icon>person</v-icon>Perfil
               </v-btn>
+              <v-btn to="/admin" color="warning" depressed outline>
+                <v-icon>account_box</v-icon>Admin
+              </v-btn>
               <v-btn @click="exit()" color="error" depressed outline>
                 Salir
                 <v-icon right>exit_to_app</v-icon>
@@ -103,7 +106,7 @@
 import config from "@/assets/js/config";
 
 export default {
-  beforeMount() {
+  mounted() {
     this.getUser();
   },
   data() {
@@ -117,8 +120,8 @@ export default {
   },
   methods: {
     getUser() {
-      // var rol = config.cookie.roles;
-      // this.rolUser = this.$cookie.get(rol);
+      var rol = config.cookie.roles;
+      this.rolUser = this.$cookie.get(rol);
       this.user = this.$cookie.get(config.cookie.username);
       if (this.user) {
         this.logged = true;

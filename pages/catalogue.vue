@@ -47,13 +47,12 @@
               <v-flex v-for="product in products" :key="product.id">
                 <v-card>
                   <center>
-                    <v-img :src="product.image" width="280px" @click="showProduct(product)">
+                    <v-img :src="product.image" contain @click="showProduct(product)">
                       <v-chip dark class="warning">
                         <strong>{{product.name}}</strong>
                       </v-chip>
                     </v-img>
                   </center>
-                  <v-divider></v-divider>
                   <v-card-actions>
                     <v-chip color="info" label outline dark @click="showProduct(product)">
                       <v-avatar>
