@@ -153,14 +153,13 @@ const axios = require("axios");
 export default {
   layout: "default",
   components: {},
-  mounted() {
-    // this.getUser();
-    this.getProducts();
+  beforeMount() {
+    this.getUser();
   },
   data() {
     return {
       logged: false,
-      rolUser: "",
+      rolUser: false,
       dialog: false,
       dialogDelete: false,
       loading: null,
@@ -219,15 +218,16 @@ export default {
       this.dialogDelete = true;
     },
     getUser() {
-      var rol = config.cookie.roles;
+      var rol = config.cookie.rol;
       this.rolUser = this.$cookie.get(rol);
       var username = config.cookie.username;
       this.user = this.$cookie.get(username);
-      if (this.rolUser) {
-        this.logged = true;
-      } else {
+      
+      if (this.rolUser == 'false') {
         alert("No tiene permisos de administrador.");
         this.$router.push("/");
+      } else {
+        this.getProducts();
       }
     }
   }

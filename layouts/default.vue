@@ -42,8 +42,13 @@
       </v-toolbar-items>
       <v-spacer />
       <v-toolbar-items>
-        <v-menu offset-y content-class="dropdown-menu" transition="slide-y-transition">
-          <v-btn slot="activator" depressed v-if="!logged">
+        <v-menu
+          v-if="!logged"
+          offset-y
+          content-class="dropdown-menu"
+          transition="slide-y-transition"
+        >
+          <v-btn slot="activator" depressed>
             <v-icon>person_add_disabled</v-icon>Ingresar
           </v-btn>
           <v-card>
@@ -58,7 +63,12 @@
           </v-card>
         </v-menu>
 
-        <v-menu v-if="logged" offset-y content-class="dropdown-menu" transition="slide-y-transition">
+        <v-menu
+          v-if="logged"
+          offset-y
+          content-class="dropdown-menu"
+          transition="slide-y-transition"
+        >
           <v-btn slot="activator" depressed>
             <v-chip>
               <v-avatar>
@@ -72,7 +82,7 @@
               <v-btn to="/profile" color="info" depressed outline>
                 <v-icon>person</v-icon>Perfil
               </v-btn>
-              <v-btn to="/admin" color="warning" depressed outline>
+              <v-btn v-if="rolUser == 'true'" to="/admin" color="warning" depressed outline>
                 <v-icon>account_box</v-icon>Admin
               </v-btn>
               <v-btn @click="exit()" color="error" depressed outline>
@@ -114,13 +124,13 @@ export default {
       snackbar: false,
       logged: false,
       user: "",
-      rolUser: "",
+      rolUser: false,
       entityUser: null
     };
   },
   methods: {
     getUser() {
-      var rol = config.cookie.roles;
+      var rol = config.cookie.rol;
       this.rolUser = this.$cookie.get(rol);
       this.user = this.$cookie.get(config.cookie.username);
       if (this.user) {
@@ -134,8 +144,7 @@ export default {
       this.$cookie.delete(config.cookie.token);
       this.$router.push("/");
       this.snackbar = true;
-      this.logged = false
-      setTimeout(() => (location.reload()), 200);
+      this.logged = false;
     }
   }
 };
