@@ -483,6 +483,7 @@ export default {
           this.quantity = this.cart.reduce((a, b) => a + b.quantity, 0);
           this.cartId = _product.cart_id;
           this.snackbar = true;
+          this.dialog = false;
         });
     },
     cleanCart(cartId, productId) {
