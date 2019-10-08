@@ -271,7 +271,7 @@ export default {
       var username = config.cookie.username;
       this.user = this.$cookie.get(username);
 
-      if (this.rolUser == "false") {
+      if (this.rolUser != "true") {
         alert("No tiene permisos de administrador.");
         this.$router.push("/");
       } else {

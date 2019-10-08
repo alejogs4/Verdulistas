@@ -32,7 +32,7 @@
         </v-layout>
 
         <v-spacer></v-spacer>
-        <v-btn v-if="logged && rolUser != 'true'" dark color="info" @click.stop="drawer = !drawer">
+        <v-btn v-if="logged" dark color="info" @click.stop="drawer = !drawer">
           <v-avatar v-if="quantity > 0" size="25px" color="warning">
             <span class="white--text">{{ quantity }}</span>
           </v-avatar>
@@ -612,7 +612,7 @@ export default {
     precioFiltro() {
       if (this.precioFiltro != 0) {
         this.products = this.allProducts.filter(
-          producto => producto.price < this.precioFiltro
+          producto => producto.price <= this.precioFiltro
         );
       } else {
         this.products = this.allProducts;
