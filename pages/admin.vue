@@ -2,12 +2,28 @@
   <div>
     <!-- TABLA DE PRODUCTOS -->
     <v-flex xs12>
-      <v-toolbar flat color="primary">
-        <v-toolbar-title>Productos</v-toolbar-title>
+      <v-toolbar flat>
+        <v-toolbar-title>
+          <h1>Productos</h1>
+        </v-toolbar-title>
         <v-spacer></v-spacer>
-        <v-btn @click="newAction()">Nuevo producto</v-btn>
+        <v-btn @click="newAction()" color="primary" class="black--text">Nuevo producto</v-btn>
       </v-toolbar>
-      <v-data-table :headers="headers" :items="products" :loading="loading" class="elevation-1">
+      <v-toolbar flat>
+        <v-spacer></v-spacer>
+        <v-text-field flat v-model="search" append-icon="search" label="Buscar"></v-text-field>
+        <v-spacer></v-spacer>
+      </v-toolbar>
+      <v-data-table
+        :headers="headers"
+        :items="products"
+        :search="search"
+        :loading="loading"
+        class="elevation-1"
+        no-results-text="Tu búsqueda no encontró resultados"
+        no-data-text="No hay datos disponibles"
+        rows-per-page-text="Productos por página"
+      >
         <template slot="items" slot-scope="props">
           <td class="text-xs-center">{{ props.item.id }}</td>
           <td>{{ props.item.code }}</td>
@@ -56,6 +72,7 @@
                 <v-text-field
                   v-model="selected.price"
                   label="Precio"
+                  prepend-inner-icon="attach_money"
                   type="number"
                   :min="0"
                   :step="100"
@@ -75,14 +92,14 @@
           </v-container>
         </v-card-text>
         <v-card-actions>
-          <v-btn color="error" outline @click="dialog = false">
+          <v-btn color="error" outline @click="cancel()">
             <v-icon>clear</v-icon>Cancelar
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn v-if="accion == 'Editar'" color="success" @click="dialog = false">
+          <v-btn v-if="accion == 'Editar'" color="success" @click="comprobarCampos()">
             <v-icon>edit</v-icon>Confirmar edición
           </v-btn>
-          <v-btn v-if="accion == 'Nuevo'" color="success" @click="dialog = false">
+          <v-btn v-if="accion == 'Nuevo'" color="success" @click="comprobarCampos()">
             <v-icon>create_new_folder</v-icon>Crear Producto
           </v-btn>
         </v-card-actions>
@@ -130,7 +147,7 @@
             <v-icon>clear</v-icon>Cancelar
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="error" @click="dialogDelete = false">
+          <v-btn color="error" @click="deleteProduct(selected)">
             <v-icon>delete_forever</v-icon>Eliminar Producto
           </v-btn>
         </v-card-actions>
@@ -138,9 +155,9 @@
     </v-dialog>
 
     <!-- NOTIFICACION -->
-    <v-snackbar v-model="snackbar" color="success" :timeout="2000">
-      Producto añadido al carrito
-      <v-icon dark>add_shopping_cart</v-icon>
+    <v-snackbar v-model="snackbar" :color="snackColor" :timeout="2200">
+      {{snackText}}
+      <v-icon dark>{{snackIcon}}</v-icon>
     </v-snackbar>
   </div>
 </template>
@@ -158,12 +175,16 @@ export default {
   },
   data() {
     return {
+      search: "",
       logged: false,
       rolUser: false,
       dialog: false,
       dialogDelete: false,
       loading: null,
       snackbar: false,
+      snackText: "",
+      snackColor: "",
+      snackIcon: "",
       headers: [
         { text: "ID", value: "id" },
         { text: "Código", value: "code" },
@@ -174,10 +195,33 @@ export default {
       ],
       products: [],
       selected: {},
-      accion: ""
+      pagination: {},
+      accion: "",
+      valid: false
     };
   },
   methods: {
+    comprobarCampos() {
+      if (
+        this.selected.code == "" ||
+        this.selected.name == "" ||
+        this.selected.description == "" ||
+        this.selected.image == "" ||
+        this.selected.price == "" ||
+        this.selected.quantity == ""
+      ) {
+        this.snackbar = true;
+        this.snackText = "Debe completar todos los campos";
+        this.snackColor = "error";
+        this.snackIcon = "error";
+      } else {
+        if (this.accion == "Nuevo") {
+          this.addProduct(this.selected);
+        } else if (this.accion == "Editar") {
+          this.editProduct(this.selected);
+        }
+      }
+    },
     getProducts() {
       this.loading = true;
       axios({
@@ -207,6 +251,10 @@ export default {
       this.accion = "Editar";
       this.dialog = true;
     },
+    cancel() {
+      this.getProducts();
+      this.dialog = false;
+    },
     newAction() {
       this.selected = {};
       this.accion = "Nuevo";
@@ -222,13 +270,127 @@ export default {
       this.rolUser = this.$cookie.get(rol);
       var username = config.cookie.username;
       this.user = this.$cookie.get(username);
-      
-      if (this.rolUser == 'false') {
+
+      if (this.rolUser == "false") {
         alert("No tiene permisos de administrador.");
         this.$router.push("/");
       } else {
         this.getProducts();
       }
+    },
+    addProduct(product) {
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get(config.cookie.token) },
+        data: {
+          query: `
+            mutation {
+              createProduct(product: {
+                code: "${product.code}",
+                name: "${product.name}",
+                description: "${product.description}",
+                price: ${product.price},
+                image:"${product.image}",
+                quantity: ${product.quantity}
+              }) {
+                id,
+                code,
+                name,
+                description,
+                price,
+                image,
+                quantity
+              }
+            }
+          `
+        }
+      })
+        .then(response => {
+          console.log("Creado", response.data.data.createProduct);
+        })
+        .then(_product => {
+          this.dialog = false;
+          this.snackText = "Producto añadido exitosamente";
+          this.snackColor = "success";
+          this.snackIcon = "check";
+          this.snackbar = true;
+          this.getProducts();
+        });
+    },
+    editProduct(product) {
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get(config.cookie.token) },
+        data: {
+          query: `
+            mutation {
+              updateProduct(productId: ${product.id},
+                product: {
+                code: "${product.code}",
+                name: "${product.name}",
+                description: "${product.description}",
+                price: ${product.price},
+                image:"${product.image}",
+                quantity: ${product.quantity}
+              }) {
+                id,
+                code,
+                name,
+                description,
+                price,
+                image,
+                quantity
+              }
+            }
+          `
+        }
+      })
+        .then(response => {
+          console.log("Editado", response.data.data.updateProduct);
+        })
+        .then(_product => {
+          this.dialog = false;
+          this.snackText = "Producto editado exitosamente";
+          this.snackColor = "success";
+          this.snackIcon = "check";
+          this.snackbar = true;
+          this.getProducts();
+        });
+    },
+    deleteProduct(product) {
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get(config.cookie.token) },
+        data: {
+          query: `
+            mutation {
+              deleteProduct(id: ${product.id}) {
+                id,
+                code,
+                name,
+                description,
+                price,
+                image,
+                quantity
+              }
+            }
+          `
+        }
+      })
+        .then(response => {
+          console.log("ELIMINADO", response.data.data.deleteProduct);
+        })
+        .then(_product => {
+          this.dialogDelete = false;
+          this.snackText = "Producto ELIMINADO exitosamente";
+          this.snackColor = "warning";
+          this.snackIcon = "check";
+          this.snackbar = true;
+          this.getProducts();
+        });
     }
   }
 };

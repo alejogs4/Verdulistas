@@ -32,7 +32,7 @@
         </v-layout>
 
         <v-spacer></v-spacer>
-        <v-btn v-if="logged" dark color="info" @click.stop="drawer = !drawer">
+        <v-btn v-if="logged && rolUser != 'true'" dark color="info" @click.stop="drawer = !drawer">
           <v-avatar v-if="quantity > 0" size="25px" color="warning">
             <span class="white--text">{{ quantity }}</span>
           </v-avatar>
@@ -45,11 +45,11 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex v-for="product in products" :key="product.id">
-                <v-card>
+                <v-card max-width="350">
                   <center>
-                    <v-img :src="product.image" contain @click="showProduct(product)">
-                      <v-chip dark class="warning">
-                        <strong>{{product.name}}</strong>
+                    <v-img :src="product.image" height="250" @click="showProduct(product)">
+                      <v-chip dark color="black">
+                        <h3>{{product.name}}</h3>
                       </v-chip>
                     </v-img>
                   </center>
@@ -65,7 +65,7 @@
                       Comprar
                       <v-icon>add_shopping_cart</v-icon>
                     </v-btn>
-                    <v-btn outline color="primary" v-if="logged" @click="addProductToCart(product)">
+                    <v-btn color="primary" class="black--text" v-if="logged" @click="addProductToCart(product)">
                       Agregar
                       <v-icon>add_shopping_cart</v-icon>
                     </v-btn>
@@ -88,21 +88,20 @@
     </v-flex>
 
     <!-- DESCRIPCION DE PRODUCTO -->
-    <v-dialog v-model="dialog" scrollable width="400" transition="scale-transition">
+    <v-dialog v-model="dialog" scrollable width="500" transition="scale-transition">
       <v-card>
         <center>
-          <v-img :src="selected.image" width="350">
-            <v-chip outline label dark>
-              <v-avatar>
-                <v-icon>label</v-icon>
-              </v-avatar>
-              <strong>{{selected.code}}</strong>
-            </v-chip>
-          </v-img>
+          <v-img :src="selected.image" contain></v-img>
         </center>
-        <br />
         <v-card-title class="warning">
           <h1>{{selected.name}}</h1>
+          <v-spacer></v-spacer>
+          <v-chip outline color="black" label dark>
+            <v-avatar>
+              <v-icon>label</v-icon>
+            </v-avatar>
+            <strong>{{selected.code}}</strong>
+          </v-chip>
         </v-card-title>
         <v-card-text>{{selected.description}}</v-card-text>
         <v-card-actions>
@@ -381,6 +380,7 @@ export default {
       order: false,
       orderText: "",
       logged: false,
+      rolUser: "",
       dialog: false,
       dialogCompra: false,
       dialogLogin: false,
@@ -576,6 +576,8 @@ export default {
     getUser() {
       var username = config.cookie.username;
       this.user = this.$cookie.get(username);
+      var rol = config.cookie.rol;
+      this.rolUser = this.$cookie.get(rol);
       if (this.user) {
         this.logged = true;
       } else {
@@ -609,7 +611,7 @@ export default {
     precioFiltro() {
       if (this.precioFiltro != 0) {
         this.products = this.allProducts.filter(
-          producto => (producto.price < this.precioFiltro)
+          producto => producto.price < this.precioFiltro
         );
       } else {
         this.products = this.allProducts;

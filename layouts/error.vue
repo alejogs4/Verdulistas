@@ -5,16 +5,21 @@
         <v-flex xs12 sm8 md4>
           <center>
             <v-icon large color="error">sentiment_very_dissatisfied</v-icon>
-            <h1 v-if="error.statusCode ===404">
+            <h1 v-if="error.statusCode === 404">
               <strong>Página no encontrada</strong>
             </h1>
             <h1 v-else>
               <strong>Ha ocurrido un error</strong>
             </h1>
             <br />
-            <nuxt-link to="/">
-              <h1>Volver a inicio</h1>
-            </nuxt-link>
+            <v-btn v-if="error.statusCode != 404" @click="recargarPagina()" large outline>
+              <v-icon left>sync</v-icon>Recargar página
+            </v-btn>
+            <v-btn to="/" large outline>
+              <v-icon left>home</v-icon>Volver a inicio
+            </v-btn>
+            <br />
+
             <v-card color="error">
               <v-img src="https://i.imgur.com/VlBmu6I.png" block></v-img>
             </v-card>
@@ -28,7 +33,12 @@
 <script>
 export default {
   layout: "default",
-  props: ["error"]
+  props: ["error"],
+  methods: {
+    recargarPagina() {
+      location.reload()
+    }
+  }
 };
 </script>
 
