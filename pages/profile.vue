@@ -4,17 +4,24 @@
       <v-flex xs12 sm8 md4>
         <v-card>
           <v-card-title>
-            <v-icon color="warning" left large>build</v-icon>
+            <v-icon color="success" large right>assignment_ind</v-icon>
             <h1>
-              <strong>[WIP]</strong>
+              <strong>Perfil</strong>
             </h1>
           </v-card-title>
           <hr/>
           <v-card-text>
-            <h1>
-              <strong>Profile</strong>
-              <v-icon color="success" large right>assignment_ind</v-icon>
-            </h1>Página de perfil de usuario.
+            <v-card>
+              <v-card-title>
+                <v-avatar color="teal">
+      <span class="white--text headline"></span>
+    </v-avatar>
+                <h2>{{user.name}} {{user.lastname}}</h2>
+                </v-card-title>
+                <v-card-text>
+                  <h3>{{user.email}}</h3>
+                </v-card-text>
+            </v-card>
           </v-card-text>
         </v-card>
       </v-flex>
@@ -23,15 +30,32 @@
 </template>
 
 <script>
+import config from "@/assets/js/config";
+
 export default {
   layout: "default",
   components: {},
-  beforeMount() {},
+  mounted() {
+    this.getUser();
+  },
 
   data() {
-    return {};
+    return {
+      user: {},
+      rolUser: "false"
+    };
   },
   watch: {},
-  methods: {}
+  methods: {
+    getUser() {
+      var userCookie = config.cookie.user;
+      this.user = JSON.parse(this.$cookie.get(userCookie));
+      if (this.user == undefined) {
+        alert("Inicie sesión");
+        this.$router.push("/");
+      }
+      console.log(this.user);
+    }
+  }
 };
 </script>

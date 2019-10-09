@@ -148,6 +148,7 @@ export default {
           this.$cookie.set(config.cookie.userid, this.user.id);
           this.$cookie.set(config.cookie.username, this.user.name);
           this.$cookie.set(config.cookie.rol, this.user.admin);
+          this.$cookie.set(config.cookie.user, JSON.stringify(this.user));
           this.loading = false;
           this.snackbar = true;
           this.snackColor = "success";
