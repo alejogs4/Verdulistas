@@ -47,7 +47,7 @@
                     <v-btn :disabled="!valid" class="success" @click="login()">
                       <v-icon>done_all</v-icon>Iniciar sesión
                     </v-btn>
-                    <v-btn @click="limpiarCampos()" outline>
+                    <v-btn @click="limpiarCampos()" outline id="clear-fields-id">
                       <v-icon>restore</v-icon>LIMPIAR CAMPOS
                     </v-btn>
                   </center>

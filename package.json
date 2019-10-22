@@ -11,7 +11,8 @@
     "build": "nuxt build",
     "generate": "nuxt generate",
     "fix-memory-limit": "cross-env LIMIT=3072 increase-memory-limit",
-    "test": "jest"
+    "test": "jest",
+    "cypress:open": "cypress open"
   },
   "dependencies": {
     "@nuxtjs/axios": "^5.0.0",
@@ -37,6 +38,7 @@
     "babel-jest": "^24.9.0",
     "babel-preset-env": "^1.7.0",
     "cross-env": "^5.0.5",
+    "cypress": "^3.4.1",
     "eslint-config-prettier": "^3.1.0",
     "eslint-plugin-prettier": "2.6.2",
     "increase-memory-limit": "^1.0.3",
