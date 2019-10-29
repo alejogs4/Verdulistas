@@ -39,6 +39,14 @@
           <v-icon dark>shopping_cart</v-icon>Ver carrito
         </v-btn>
       </v-toolbar>
+      <v-tabs grow slider-color="warning">
+        <v-tab v-for="cat in categories" :key="cat.name">
+          <v-btn depressed flat block @click="tab = cat.name">
+            {{ cat.name }}
+            <v-icon>{{ cat.icon }}</v-icon>
+          </v-btn>
+        </v-tab>
+      </v-tabs>
       <v-card>
         <v-card-text class="secondary">
           <v-progress-linear color="info" indeterminate v-if="loading"></v-progress-linear>
@@ -65,7 +73,12 @@
                       Comprar
                       <v-icon>add_shopping_cart</v-icon>
                     </v-btn>
-                    <v-btn color="primary" class="black--text" v-if="logged" @click="addProductToCart(product)">
+                    <v-btn
+                      color="primary"
+                      class="black--text"
+                      v-if="logged"
+                      @click="addProductToCart(product)"
+                    >
                       Agregar
                       <v-icon>add_shopping_cart</v-icon>
                     </v-btn>
@@ -379,6 +392,7 @@ export default {
       valid: false,
       order: false,
       orderText: "",
+      tab: "Todos",
       logged: false,
       rolUser: "",
       dialog: false,
@@ -395,6 +409,11 @@ export default {
         { title: "Cantidad", value: "quantity" },
         { title: "Precio x unidad", value: "price" },
         { title: "Precio", value: "totalPrice" }
+      ],
+      categories: [
+        { name: "Todos", icon: "blur_on" },
+        { name: "Verduras", icon: "eco" },
+        { name: "Frutas", icon: "filter_vintage" }
       ],
       rules: [v => !!v || "Campo obligatorio"],
       phoneRules: [
