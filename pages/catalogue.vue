@@ -39,7 +39,7 @@
           <v-icon dark>shopping_cart</v-icon>Ver carrito
         </v-btn>
       </v-toolbar>
-      <v-tabs grow slider-color="warning">
+      <v-tabs centered slider-color="warning" color="info" dark>
         <v-tab v-for="cat in categories" :key="cat.name">
           <v-btn depressed flat block @click="tab = cat.name">
             {{ cat.name }}
@@ -103,20 +103,22 @@
     <!-- DESCRIPCION DE PRODUCTO -->
     <v-dialog v-model="dialog" scrollable width="500" transition="scale-transition">
       <v-card>
+        <v-card-title class="warning">
+          <h1>{{selected.name}}</h1>
+        </v-card-title>
         <center>
           <v-img :src="selected.image" contain></v-img>
         </center>
-        <v-card-title class="warning">
-          <h1>{{selected.name}}</h1>
-          <v-spacer></v-spacer>
+        <v-card-text>{{selected.description}}</v-card-text>
+        <div>
           <v-chip outline color="black" label dark>
             <v-avatar>
               <v-icon>label</v-icon>
             </v-avatar>
-            <strong>{{selected.code}}</strong>
+            <strong v-if="selected != {}">{{selected.category.name}}</strong>
           </v-chip>
-        </v-card-title>
-        <v-card-text>{{selected.description}}</v-card-text>
+          <v-spacer></v-spacer>
+        </div>
         <v-card-actions>
           <v-chip color="info" label outline dark>
             <v-avatar>
@@ -386,6 +388,7 @@ export default {
   mounted() {
     this.getUser();
     this.getProducts();
+    this.getCategories();
   },
   data() {
     return {
@@ -411,9 +414,9 @@ export default {
         { title: "Precio", value: "totalPrice" }
       ],
       categories: [
-        { name: "Todos", icon: "blur_on" },
-        { name: "Verduras", icon: "eco" },
-        { name: "Frutas", icon: "filter_vintage" }
+        // { name: "Todos", icon: "blur_on" },
+        // { name: "Verduras", icon: "eco" },
+        // { name: "Frutas", icon: "filter_vintage" }
       ],
       rules: [v => !!v || "Campo obligatorio"],
       phoneRules: [
@@ -426,7 +429,11 @@ export default {
       cartId: -1,
       products: [],
       allProducts: [],
-      selected: {},
+      selected: {
+        category: {
+          name: null
+        }
+      },
       totalPrice: 0,
       address: "",
       phone: ""
@@ -461,6 +468,26 @@ export default {
               0
             );
           }
+        });
+    },
+    getCategories() {
+      this.loading = true;
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get(config.cookie.token) },
+        data: {
+          query: graphQL.queries.categories
+        }
+      })
+        .then(result => result.data.data)
+        .then(result => {
+          this.loading = false;
+          this.categories = [];
+          this.categories.push({ name: "Todos", icon: "blur_on" });
+          result.categories.forEach(element => {
+            this.categories.push(element);
+          });
         });
     },
     showProduct(product) {
@@ -635,6 +662,15 @@ export default {
         );
       } else {
         this.products = this.allProducts;
+      }
+    },
+    tab() {
+      if (this.tab == "Todos") {
+        this.products = this.allProducts;
+      } else {
+        this.products = this.allProducts.filter(
+          producto => producto.category.name == this.tab
+        );
       }
     }
   }

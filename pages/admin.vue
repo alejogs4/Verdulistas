@@ -1,48 +1,116 @@
 <template>
   <div>
-    <!-- TABLA DE PRODUCTOS -->
-    <v-flex xs12>
-      <v-toolbar flat>
-        <v-toolbar-title>
-          <h1>Productos</h1>
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-btn @click="newAction()" color="primary" class="black--text">Nuevo producto</v-btn>
-      </v-toolbar>
-      <v-toolbar flat>
+    <v-tabs v-model="model" centered color="info" dark slider-color="warning">
+      <v-tab href="#tab-1">Productos</v-tab>
+      <v-tab href="#tab-2">Categorias</v-tab>
+      <v-tab href="#tab-3" disabled>Pedidos</v-tab>
+    </v-tabs>
+
+    <v-tabs-items v-model="model">
+      <v-tab-item value="tab-1">
+        <!-- TABLA DE PRODUCTOS -->
+        <v-flex xs12>
+          <v-toolbar flat>
+            <v-toolbar-title>
+              <h1>Productos</h1>
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn @click="newAction('product')" color="primary" class="black--text">Nuevo producto</v-btn>
+          </v-toolbar>
+          <v-toolbar flat>
+            <v-spacer></v-spacer>
+            <v-text-field flat v-model="search" append-icon="search" label="Buscar"></v-text-field>
+            <v-spacer></v-spacer>
+          </v-toolbar>
+          <v-data-table
+            :headers="headers"
+            :items="products"
+            :search="search"
+            :loading="loading"
+            class="elevation-1"
+            no-results-text="Tu búsqueda no encontró resultados"
+            no-data-text="No hay datos disponibles"
+            rows-per-page-text="Productos por página"
+          >
+            <template slot="items" slot-scope="props">
+              <td class="text-xs-center">{{ props.item.id }}</td>
+              <td>{{ props.item.code }}</td>
+              <td>{{ props.item.name }}</td>
+              <td>{{ props.item.category.name }}</td>
+              <td class="text-xs-right">{{ props.item.price }}</td>
+              <td class="text-xs-right">{{ props.item.quantity }}</td>
+              <td class="text-xs-left">
+                <v-btn small icon outline color="info" @click="editAction(props.item, 'product')">
+                  <v-icon small>edit</v-icon>
+                </v-btn>
+                <v-btn
+                  small
+                  icon
+                  outline
+                  color="error"
+                  @click="deleteAction(props.item, 'product')"
+                >
+                  <v-icon small>delete</v-icon>
+                </v-btn>
+              </td>
+            </template>
+          </v-data-table>
+        </v-flex>
+      </v-tab-item>
+
+      <v-tab-item value="tab-2">
+        <!-- TABLA DE CATEGORIAS -->
+        <v-flex xs12>
+          <v-toolbar flat>
+            <v-toolbar-title>
+              <h1>Categorias</h1>
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+            <v-btn
+              @click="newAction('category')"
+              color="primary"
+              class="black--text"
+            >Nueva categoria</v-btn>
+          </v-toolbar>
+          <!-- <v-toolbar flat>
         <v-spacer></v-spacer>
         <v-text-field flat v-model="search" append-icon="search" label="Buscar"></v-text-field>
         <v-spacer></v-spacer>
-      </v-toolbar>
-      <v-data-table
-        :headers="headers"
-        :items="products"
-        :search="search"
-        :loading="loading"
-        class="elevation-1"
-        no-results-text="Tu búsqueda no encontró resultados"
-        no-data-text="No hay datos disponibles"
-        rows-per-page-text="Productos por página"
-      >
-        <template slot="items" slot-scope="props">
-          <td class="text-xs-center">{{ props.item.id }}</td>
-          <td>{{ props.item.code }}</td>
-          <td>{{ props.item.name }}</td>
-          <td class="text-xs-right">{{ props.item.price }}</td>
-          <td class="text-xs-right">{{ props.item.quantity }}</td>
-          <td class="text-xs-left">
-            <v-btn small icon outline color="info" @click="editAction(props.item)">
-              <v-icon small>edit</v-icon>
-            </v-btn>
-            <v-btn small icon outline color="error" @click="deleteAction(props.item)">
-              <v-icon small>delete</v-icon>
-            </v-btn>
-          </td>
-        </template>
-      </v-data-table>
-    </v-flex>
+          </v-toolbar>-->
+          <v-data-table
+            :headers="headersCat"
+            :items="categories"
+            :loading="loading"
+            class="elevation-1"
+            no-results-text="Tu búsqueda no encontró resultados"
+            no-data-text="No hay datos disponibles"
+            rows-per-page-text="Categorias por página"
+          >
+            <template slot="items" slot-scope="props">
+              <td>{{ props.item.id }}</td>
+              <td>{{ props.item.name }}</td>
+              <td>{{ props.item.icon }}</td>
+              <td class="text-xs-left">
+                <v-btn small icon outline color="info" @click="editAction(props.item, 'category')">
+                  <v-icon small>edit</v-icon>
+                </v-btn>
+                <v-btn
+                  small
+                  icon
+                  outline
+                  color="error"
+                  @click="deleteAction(props.item, 'category')"
+                >
+                  <v-icon small>delete</v-icon>
+                </v-btn>
+              </td>
+            </template>
+          </v-data-table>
+        </v-flex>
+      </v-tab-item>
+    </v-tabs-items>
 
-    <!-- DIALOGO DE EDICION Y CREACION -->
+    <!-- DIALOGO DE EDICION Y CREACION PRODUCTO -->
     <v-dialog v-model="dialog" persistent scrollable max-width="600px">
       <v-card>
         <v-card-title class="primary">
@@ -54,23 +122,28 @@
           <v-container grid-list-md>
             <v-layout wrap>
               <v-flex xs12 sm6 md6>
-                <v-text-field v-model="selected.code" label="Código" type="text" required></v-text-field>
+                <v-text-field v-model="selectedProduct.code" label="Código" type="text" required></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md6>
-                <v-text-field v-model="selected.name" label="Nombre" type="text" required></v-text-field>
+                <v-text-field v-model="selectedProduct.name" label="Nombre" type="text" required></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md6>
-                <v-textarea v-model="selected.description" label="Descripción"></v-textarea>
+                <v-textarea v-model="selectedProduct.description" label="Descripción"></v-textarea>
               </v-flex>
               <v-flex xs12 sm6 md6>
-                <v-img :src="selected.image" :lazy-src="selected.image" contain height="125"></v-img>
+                <v-img
+                  :src="selectedProduct.image"
+                  :lazy-src="selectedProduct.image"
+                  contain
+                  height="125"
+                ></v-img>
               </v-flex>
               <v-flex xs12>
-                <v-text-field v-model="selected.image" label="URL de imagen" required></v-text-field>
+                <v-text-field v-model="selectedProduct.image" label="URL de imagen" required></v-text-field>
               </v-flex>
               <v-flex xs12 sm6 md6>
                 <v-text-field
-                  v-model="selected.price"
+                  v-model="selectedProduct.price"
                   label="Precio"
                   prepend-inner-icon="attach_money"
                   type="number"
@@ -81,12 +154,20 @@
               </v-flex>
               <v-flex xs12 sm6 md6>
                 <v-text-field
-                  v-model="selected.quantity"
+                  v-model="selectedProduct.quantity"
                   label="Cantidad"
                   type="number"
                   :min="0"
                   required
                 ></v-text-field>
+              </v-flex>
+              <v-flex xs12>
+                <v-select
+                  v-model="selectedProduct.category.name"
+                  :items="categoriesNames"
+                  label="Categoría"
+                  required
+                ></v-select>
               </v-flex>
             </v-layout>
           </v-container>
@@ -106,7 +187,7 @@
       </v-card>
     </v-dialog>
 
-    <!-- DIALOGO DE ELIMINAR -->
+    <!-- DIALOGO DE ELIMINAR PRODUCTO -->
     <v-dialog v-model="dialogDelete" persistent max-width="400">
       <v-card>
         <v-card-title class="error">
@@ -119,9 +200,9 @@
           <br />
           <v-card>
             <center>
-              <v-img :src="selected.image" contain>
+              <v-img :src="selectedProduct.image" contain>
                 <v-chip dark class="warning">
-                  <strong>{{selected.name}}</strong>
+                  <strong>{{selectedProduct.name}}</strong>
                 </v-chip>
               </v-img>
             </center>
@@ -130,14 +211,14 @@
                 <v-avatar>
                   <v-icon>label</v-icon>
                 </v-avatar>
-                <strong>{{selected.code}}</strong>
+                <strong>{{selectedProduct.code}}</strong>
               </v-chip>
               <v-spacer></v-spacer>
               <v-chip color="info" label outline dark>
                 <v-avatar>
                   <v-icon>local_atm</v-icon>
                 </v-avatar>
-                <strong>Precio: ${{selected.price}}</strong>
+                <strong>Precio: ${{selectedProduct.price}}</strong>
               </v-chip>
             </v-card-actions>
           </v-card>
@@ -147,8 +228,88 @@
             <v-icon>clear</v-icon>Cancelar
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn color="error" @click="deleteProduct(selected)">
+          <v-btn color="error" @click="deleteProduct(selectedProduct)">
             <v-icon>delete_forever</v-icon>Eliminar Producto
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- DIALOGO DE CATEGORIA -->
+    <v-dialog v-model="dialogCategory" persistent scrollable max-width="600px">
+      <v-card>
+        <v-card-title class="primary">
+          <span class="headline">
+            <strong>{{accion}}</strong> Categoria
+          </span>
+        </v-card-title>
+        <v-card-text>
+          <v-container grid-list-md>
+            <v-layout wrap>
+              <v-flex xs12 sm6 md6>
+                <v-text-field v-model="selectedCategory.name" label="Nombre" type="text" required></v-text-field>
+              </v-flex>
+              <v-flex xs12 sm6 md6>
+                <v-text-field
+                  v-model="selectedCategory.icon"
+                  label="Icono"
+                  type="text"
+                  required
+                  :append-icon="selectedCategory.icon"
+                ></v-text-field>
+              </v-flex>
+            </v-layout>
+          </v-container>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="error" outline @click="cancel()">
+            <v-icon>clear</v-icon>Cancelar
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn v-if="accion == 'Editar'" color="success" @click="comprobarCampos()">
+            <v-icon>edit</v-icon>Confirmar edición
+          </v-btn>
+          <v-btn v-if="accion == 'Nuevo'" color="success" @click="comprobarCampos()">
+            <v-icon>create_new_folder</v-icon>Crear Categoria
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- DIALOGO DE ELIMINAR CATEGORIA -->
+    <v-dialog v-model="dialogDeleteCategory" persistent max-width="400">
+      <v-card>
+        <v-card-title class="error">
+          <span class="headline white--text">
+            <strong>{{accion}}</strong> Categoría
+          </span>
+        </v-card-title>
+        <v-card-text>
+          <h3>¿Desea eliminar esta categoría?</h3>
+          <br />
+          <v-toolbar>
+            <v-chip label outline color="black">
+              <v-avatar>
+                <v-icon>label</v-icon>
+              </v-avatar>
+              <strong>Nombre: {{selectedCategory.name}}</strong>
+            </v-chip>
+            <v-spacer></v-spacer>
+            <v-chip color="info" label outline dark>
+              <v-avatar>
+                <v-icon>{{selectedCategory.icon}}</v-icon>
+              </v-avatar>
+              <strong>Icono: "{{selectedCategory.icon}}"</strong>
+            </v-chip>
+          </v-toolbar>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn outline @click="dialogDeleteCategory = false">
+            <v-icon>clear</v-icon>Cancelar
+          </v-btn>
+          <v-spacer></v-spacer>
+          <v-btn color="error" @click="deleteProduct(selectedProduct)">
+            <v-icon>delete_forever</v-icon>Eliminar Categoria
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -172,14 +333,18 @@ export default {
   components: {},
   beforeMount() {
     this.getUser();
+    this.getCategories();
   },
   data() {
     return {
+      model: "tab-1",
       search: "",
       logged: false,
       rolUser: false,
       dialog: false,
       dialogDelete: false,
+      dialogCategory: false,
+      dialogDeleteCategory: false,
       loading: null,
       snackbar: false,
       snackText: "",
@@ -189,12 +354,26 @@ export default {
         { text: "ID", value: "id" },
         { text: "Código", value: "code" },
         { text: "Nombre", value: "name" },
+        { text: "Categoria", value: "category" },
         { text: "Precio", value: "price" },
         { text: "Cantidad", value: "quantity" },
         { text: "Acciones", value: "actions" }
       ],
+      headersCat: [
+        { text: "ID", value: "id" },
+        { text: "Nombre", value: "name" },
+        { text: "Icono", value: "icon" },
+        { text: "Acciones", value: "actions" }
+      ],
       products: [],
-      selected: {},
+      categories: [],
+      categoriesNames: [],
+      selectedProduct: {
+        category: {
+          name: ""
+        }
+      },
+      selectedCategory: {},
       pagination: {},
       accion: "",
       valid: false
@@ -203,12 +382,12 @@ export default {
   methods: {
     comprobarCampos() {
       if (
-        this.selected.code == "" ||
-        this.selected.name == "" ||
-        this.selected.description == "" ||
-        this.selected.image == "" ||
-        this.selected.price == "" ||
-        this.selected.quantity == ""
+        this.selectedProduct.code == "" ||
+        this.selectedProduct.name == "" ||
+        this.selectedProduct.description == "" ||
+        this.selectedProduct.image == "" ||
+        this.selectedProduct.price == "" ||
+        this.selectedProduct.quantity == ""
       ) {
         this.snackbar = true;
         this.snackText = "Debe completar todos los campos";
@@ -216,9 +395,9 @@ export default {
         this.snackIcon = "error";
       } else {
         if (this.accion == "Nuevo") {
-          this.addProduct(this.selected);
+          this.addProduct(this.selectedProduct);
         } else if (this.accion == "Editar") {
-          this.editProduct(this.selected);
+          this.editProduct(this.selectedProduct);
         }
       }
     },
@@ -237,7 +416,11 @@ export default {
                 description,
                 price,
                 image,
-                quantity
+                quantity,
+                category {
+                  id,
+                  name
+                }
             }
           }`
         }
@@ -246,24 +429,66 @@ export default {
         this.products = result.data.data.products;
       });
     },
-    editAction(product) {
-      this.selected = product;
+    getCategories() {
+      this.loading = true;
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get(config.cookie.token) },
+        data: {
+          query: graphQL.queries.categories
+        }
+      })
+        .then(result => result.data.data)
+        .then(result => {
+          this.loading = false;
+          this.categories = [];
+          result.categories.forEach(element => {
+            this.categoriesNames.push(element.name);
+            this.categories.push(element);
+          });
+        });
+    },
+    editAction(item, type) {
+      if (type == "product") {
+        this.dialog = true;
+        this.selectedProduct = item;
+      } else if (type == "category") {
+        this.dialogCategory = true;
+        this.selectedCategory = item;
+      }
       this.accion = "Editar";
-      this.dialog = true;
     },
     cancel() {
       this.getProducts();
+      this.getCategories();
       this.dialog = false;
+      this.dialogCategory = false;
     },
-    newAction() {
-      this.selected = {};
-      this.accion = "Nuevo";
-      this.dialog = true;
+    newAction(type) {
+      if (type == "product") {
+        this.dialog = true;
+        this.accion = "Nuevo";
+        this.selectedProduct = {
+          category: {
+            name: ""
+          }
+        };
+      } else if (type == "category") {
+        this.dialogCategory = true;
+        this.accion = "Nueva";
+        this.selectedCategory = {};
+      }
     },
-    deleteAction(product) {
-      this.selected = product;
+    deleteAction(item, type) {
       this.accion = "Eliminar";
-      this.dialogDelete = true;
+      if (type == "product") {
+        this.dialogDelete = true;
+        this.selectedProduct = item;
+      } else if (type == "category") {
+        this.selectedCategory = item;
+        this.dialogDeleteCategory = true;
+      }
     },
     getUser() {
       var rol = config.cookie.rol;
@@ -278,6 +503,16 @@ export default {
         this.getProducts();
       }
     },
+    getCategory(nombre) {
+      var id = null;
+      this.categories.forEach(element => {
+        if (element.name == nombre) {
+          id = element.id;
+        }
+      });
+      return id;
+    },
+
     addProduct(product) {
       axios({
         url: config.api.url,
@@ -292,7 +527,8 @@ export default {
                 description: "${product.description}",
                 price: ${product.price},
                 image:"${product.image}",
-                quantity: ${product.quantity}
+                quantity: ${product.quantity},
+                categoryId: ${this.getCategory(product.category.name)}
               }) {
                 id,
                 code,
@@ -300,7 +536,11 @@ export default {
                 description,
                 price,
                 image,
-                quantity
+                quantity,
+                category {
+                  id,
+                  name
+                }
               }
             }
           `
@@ -333,7 +573,8 @@ export default {
                 description: "${product.description}",
                 price: ${product.price},
                 image:"${product.image}",
-                quantity: ${product.quantity}
+                quantity: ${product.quantity},
+                categoryId: ${this.getCategory(product.category.name)}
               }) {
                 id,
                 code,
@@ -341,7 +582,11 @@ export default {
                 description,
                 price,
                 image,
-                quantity
+                quantity,
+                category {
+                  id,
+                  name
+                }
               }
             }
           `

@@ -1,6 +1,6 @@
 let graphQL = {
-    queries: {
-        catalogue: `
+  queries: {
+    catalogue: `
         {
           products {
             id,
@@ -9,7 +9,11 @@ let graphQL = {
             description,
             price,
             image,
-            quantity
+            quantity,
+            category {
+              id,
+              name
+            }
           }
           userCart {
             id
@@ -26,7 +30,14 @@ let graphQL = {
           }
         }
       `,
-    }
+    categories: `
+    {
+      categories {
+        id,
+        name
+      }
+    }`
+  }
 }
 
 export default graphQL
