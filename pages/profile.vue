@@ -9,18 +9,43 @@
               <strong>Perfil</strong>
             </h1>
           </v-card-title>
-          <hr/>
+          <hr />
           <v-card-text>
             <v-card>
-              <v-card-title>
-                <v-avatar color="teal">
-      <span class="white--text headline"></span>
-    </v-avatar>
-                <h2>{{user.name}} {{user.lastname}}</h2>
+              <center>
+                <v-card-title class="primary">
+                  <v-avatar color="info">
+                    <span class="white--text headline">{{initials}}</span>
+                  </v-avatar>
+                  <v-spacer></v-spacer>
+                  <h1>
+                    {{user.name}}
+                    {{user.lastname}}
+                  </h1>
+                  <v-spacer></v-spacer>
                 </v-card-title>
-                <v-card-text>
-                  <h3>{{user.email}}</h3>
+                <v-card-text class="secondary">
+                  <h2 v-if="user.admin == true" class="warning--text">
+                    <v-icon color="warning">person</v-icon>Administrador
+                  </h2>
+                  <h2 v-else class="warning--text">
+                    <v-icon color="warning">star</v-icon>Usuario
+                  </h2>
+                  <h2>{{user.email}}</h2>
                 </v-card-text>
+                <v-card-text>
+                  <h3>Puntos acumulados</h3>
+                  <v-progress-circular
+                    :rotate="-90"
+                    :size="100"
+                    :width="15"
+                    :value="user.bond"
+                    color="primary"
+                  >{{ user.bond }}</v-progress-circular>
+                  <br>
+                  <small>Estos puntos serán redimidos en su próxima compra</small>
+                </v-card-text>
+              </center>
             </v-card>
           </v-card-text>
         </v-card>
@@ -42,7 +67,8 @@ export default {
   data() {
     return {
       user: {},
-      rolUser: "false"
+      rolUser: "false",
+      initials: ""
     };
   },
   watch: {},
@@ -50,6 +76,8 @@ export default {
     getUser() {
       var userCookie = config.cookie.user;
       this.user = JSON.parse(this.$cookie.get(userCookie));
+      this.initials =
+        this.user.name.split("")[0] + this.user.lastname.split("")[0];
       if (this.user == undefined) {
         alert("Inicie sesión");
         this.$router.push("/");

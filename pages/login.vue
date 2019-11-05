@@ -127,7 +127,8 @@ export default {
                   name,
                   lastname,
                   email,
-                  admin
+                  admin,
+                  bond
                 },
                 token
               }

@@ -66,6 +66,12 @@
                     label="Confirmar contraseña"
                     required
                   ></v-text-field>
+                  <v-text-field
+                    v-model="referral_code"
+                    prepend-icon="important_devices"
+                    type="text"
+                    label="Código de referido (opcional)"
+                  ></v-text-field>
                   <center>
                     <v-btn :disabled="!valid" class="success" @click="register()">
                       <v-icon>save</v-icon>Registrarse
@@ -112,6 +118,7 @@ export default {
       email: "",
       password: "",
       confpassword: "",
+      referral_code: "",
       emailRules: [
         v => !!v || "Ingrese e-mail",
         v => /.+@.+\..+/.test(v) || "E-mail debe ser válido"
@@ -146,12 +153,16 @@ export default {
         this.errorText = "Las contraseñas deben coincidir.";
         this.loading = false;
       } else {
+        if (this.referral_code == '') {
+          this.referral_code = []
+        }
         this.loading = true;
         var user = {
           name: this.name,
           lastname: this.lastname,
           email: this.email,
-          password: this.password
+          password: this.password,
+          referral_code: this.referral_code
         };
         axios({
           url: config.api.url,
