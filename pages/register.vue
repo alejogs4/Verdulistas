@@ -153,9 +153,6 @@ export default {
         this.errorText = "Las contraseñas deben coincidir.";
         this.loading = false;
       } else {
-        if (this.referral_code == '') {
-          this.referral_code = []
-        }
         this.loading = true;
         var user = {
           name: this.name,

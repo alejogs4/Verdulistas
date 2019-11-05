@@ -72,11 +72,6 @@
               class="black--text"
             >Nueva categoria</v-btn>
           </v-toolbar>
-          <!-- <v-toolbar flat>
-        <v-spacer></v-spacer>
-        <v-text-field flat v-model="search" append-icon="search" label="Buscar"></v-text-field>
-        <v-spacer></v-spacer>
-          </v-toolbar>-->
           <v-data-table
             :headers="headersCat"
             :items="categories"
@@ -95,6 +90,7 @@
                   <v-icon small>edit</v-icon>
                 </v-btn>
                 <v-btn
+                  disabled
                   small
                   icon
                   outline
@@ -129,7 +125,6 @@
           >
             <template slot="items" slot-scope="props">
               <td>{{ props.item.id }}</td>
-              <td>{{ props.item.cart_id }}</td>
               <td>{{ props.item.address }}</td>
               <td>{{ props.item.phone }}</td>
               <td>{{ props.item.order_date }}</td>
@@ -317,10 +312,10 @@
             <v-icon>clear</v-icon>Cancelar
           </v-btn>
           <v-spacer></v-spacer>
-          <v-btn v-if="accion == 'Editar'" color="success" @click="comprobarCampos()">
+          <v-btn v-if="accion == 'Editar'" color="success" @click="editCategory()">
             <v-icon>edit</v-icon>Confirmar edición
           </v-btn>
-          <v-btn v-if="accion == 'Nuevo'" color="success" @click="comprobarCampos()">
+          <v-btn v-if="accion == 'Nueva'" color="success" @click="addCategory()">
             <v-icon>create_new_folder</v-icon>Crear Categoria
           </v-btn>
         </v-card-actions>
@@ -420,8 +415,7 @@ export default {
       ],
       headersOrder: [
         { text: "ID", value: "id" },
-        { text: "Carrito", value: "cart_id" },
-        { text: "Direccón", value: "address" },
+        { text: "Dirección", value: "address" },
         { text: "Teléfono", value: "phone" },
         { text: "Fecha", value: "order_date" },
         { text: "Usuario", value: "user" }
@@ -595,6 +589,68 @@ export default {
         }
       });
       return id;
+    },
+    addCategory() {
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get(config.cookie.token) },
+        data: {
+          query: `
+            mutation {
+              addCategory(
+                name: "${this.selectedCategory.name}",
+                icon: "${this.selectedCategory.icon}") {
+                id,
+                name,
+                icon
+              }
+            }
+          `
+        }
+      })
+        .then(response => {
+          console.log("Creado", response.data.data.addCategory);
+        })
+        .then(_product => {
+          this.dialogCategory = false;
+          this.snackText = "Categoria añadida exitosamente";
+          this.snackColor = "success";
+          this.snackIcon = "check";
+          this.snackbar = true;
+          this.getCategories();
+        });
+    },
+    editCategory() {
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get(config.cookie.token) },
+        data: {
+          query: `
+            mutation {
+              editCategory(id: ${this.selectedCategory.id},
+                name: "${this.selectedCategory.name}",
+                icon: "${this.selectedCategory.icon}") {
+                id,
+                name,
+                icon
+              }
+            }
+          `
+        }
+      })
+        .then(response => {
+          console.log("Editado", response.data.data.editCategory);
+        })
+        .then(_product => {
+          this.dialogCategory = false;
+          this.snackText = "Categoria editada exitosamente";
+          this.snackColor = "success";
+          this.snackIcon = "check";
+          this.snackbar = true;
+          this.getCategories();
+        });
     },
 
     addProduct(product) {

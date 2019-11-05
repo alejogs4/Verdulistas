@@ -34,14 +34,14 @@ let graphQL = {
     {
       categories {
         id,
-        name
+        name,
+        icon
       }
     }`,
     orders: `
     {
       orders {
         id,
-        cart_id,
         address,
         phone,
         order_date,
@@ -50,7 +50,7 @@ let graphQL = {
           name,
           lastname,
           email
-        }
+        },
       }
     }`
   }

@@ -42,8 +42,19 @@
                     :value="user.bond"
                     color="primary"
                   >{{ user.bond }}</v-progress-circular>
-                  <br>
+                  <br />
                   <small>Estos puntos serán redimidos en su próxima compra</small>
+                </v-card-text>
+                <v-card-text class="secondary">
+                  <h3>CÓDIGO DE REFERIDO</h3>
+                  <v-chip color="primary">
+                    <v-avatar class="info">
+                      <v-icon>star</v-icon>
+                    </v-avatar>
+                    <strong>{{ user.referral_code }}</strong>
+                  </v-chip>
+                  <br />
+                  <small>Dile a tus amigos que se registren con este código para que recibas bonificaciones!</small>
                 </v-card-text>
               </center>
             </v-card>
@@ -56,6 +67,7 @@
 
 <script>
 import config from "@/assets/js/config";
+const axios = require("axios");
 
 export default {
   layout: "default",
@@ -82,7 +94,40 @@ export default {
         alert("Inicie sesión");
         this.$router.push("/");
       }
-      console.log(this.user);
+      this.getProfile();
+    },
+    getProfile() {
+      this.loading = true;
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get(config.cookie.token) },
+        data: {
+          query: `{
+            profile(
+              id: ${parseInt(this.user.id)}
+            ) {
+              id,
+              name,
+              lastname,
+              email,
+              admin,
+              bond,
+              referral_code
+            }
+          }`
+        }
+      })
+        .then(result => result.data.data)
+        .then(result => {
+          this.loading = false;
+          this.user = result.profile;
+          this.$cookie.set(config.cookie.userid, this.user.id);
+          this.$cookie.set(config.cookie.username, this.user.name);
+          this.$cookie.set(config.cookie.rol, this.user.admin);
+          this.$cookie.set(config.cookie.user, JSON.stringify(this.user));
+          this.getUser();
+        });
     }
   }
 };

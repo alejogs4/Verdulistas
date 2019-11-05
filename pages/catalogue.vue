@@ -101,7 +101,7 @@
     </v-flex>
 
     <!-- DESCRIPCION DE PRODUCTO -->
-    <v-dialog v-model="dialog" scrollable width="500" transition="scale-transition">
+    <v-dialog v-model="dialog" width="500" transition="scale-transition">
       <v-card>
         <v-card-title class="warning">
           <h1>{{selected.name}}</h1>
@@ -296,7 +296,7 @@
                   style="background-color: rgb(200,200,200); color:black; border:0.2px solid black; text-align: center; padding: 5px;"
                 >
                   <td>
-                    <b>Total de pedido</b>
+                    <b>Subtotal</b>
                   </td>
                   <td></td>
                   <td></td>
@@ -304,6 +304,37 @@
                     style="background-color: rgb(235,241,222); color:black; border:0.2px solid black; padding: 5px;"
                   >
                     <b>${{totalPrice}}</b>
+                  </td>
+                </tr>
+                <tr
+                  v-if="user.bond > 0"
+                  style="background-color: rgb(200,200,200); color:black; border:0.2px solid black; text-align: center; padding: 5px;"
+                >
+                  <td>
+                    <b>Bonificación</b>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td
+                    style="background-color: rgb(235,241,222); color:black; border:0.2px solid black; padding: 5px;"
+                  >
+                    <b>{{user.bond}}</b>
+                  </td>
+                </tr>
+                <tr style="height: 20px;"></tr>
+                <tr
+                  style="background-color: rgb(200,200,200); color:black; border:0.2px solid black; text-align: center; padding: 5px;"
+                >
+                  <td>
+                    <b>Total de pedido</b>
+                  </td>
+                  <td></td>
+                  <td></td>
+                  <td
+                    style="background-color: rgb(235,241,222); color:black; border:0.2px solid black; padding: 5px;"
+                  >
+                    <b v-if="(totalPrice - user.bond) > 0">${{totalPrice - user.bond}}</b>
+                    <b v-else>$0</b>
                   </td>
                 </tr>
               </table>
@@ -343,18 +374,12 @@
             <v-icon>done_all</v-icon>Confirmar
           </v-btn>
         </v-card-actions>
-        <v-alert :value="order" color="info">
-          <h4>
-            <v-icon dark left>done_all</v-icon>
-            <i>{{ orderText }}</i>
-          </h4>
-        </v-alert>
       </v-card>
     </v-dialog>
 
     <!-- NOTIFICACION -->
     <v-snackbar v-model="snackbar" color="success" :timeout="2000">
-      Producto añadido al carrito
+      {{snacktext}}
       <v-icon dark>add_shopping_cart</v-icon>
     </v-snackbar>
 
@@ -397,12 +422,14 @@ export default {
       orderText: "",
       tab: "Todos",
       logged: false,
+      user: {},
       rolUser: "",
       dialog: false,
       dialogCompra: false,
       dialogLogin: false,
       loading: null,
       snackbar: false,
+      snacktext: "",
       drawer: null,
       drawer2: null,
       nombreFiltro: "",
@@ -413,11 +440,7 @@ export default {
         { title: "Precio x unidad", value: "price" },
         { title: "Precio", value: "totalPrice" }
       ],
-      categories: [
-        // { name: "Todos", icon: "blur_on" },
-        // { name: "Verduras", icon: "eco" },
-        // { name: "Frutas", icon: "filter_vintage" }
-      ],
+      categories: [],
       rules: [v => !!v || "Campo obligatorio"],
       phoneRules: [
         v => !!v || "Ingrese teléfono",
@@ -529,6 +552,7 @@ export default {
           this.quantity = this.cart.reduce((a, b) => a + b.quantity, 0);
           this.cartId = _product.cart_id;
           this.snackbar = true;
+          this.snacktext = "Producto añadido al carrito";
           this.dialog = false;
         });
     },
@@ -614,17 +638,17 @@ export default {
         this.quantity = 0;
         this.cartId = -1;
         this.cart = [];
-        this.orderText = "Pedido generado correctamente, compruebe su correo";
-        this.order = true;
-        setTimeout(() => (this.order = false), 1500);
-        setTimeout(() => (this.dialogCompra = false), 2500);
+        this.dialogCompra = false;
+        this.snackbar = true;
+        this.snacktext = "Pedido generado! Compruebe el correo";
       });
     },
     getUser() {
-      var username = config.cookie.username;
-      this.user = this.$cookie.get(username);
+      var userCookie = config.cookie.user;
+      this.user = JSON.parse(this.$cookie.get(userCookie));
       var rol = config.cookie.rol;
       this.rolUser = this.$cookie.get(rol);
+
       if (this.user) {
         this.logged = true;
       } else {

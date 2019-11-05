@@ -120,15 +120,16 @@ export default {
           query: `
             mutation {
               signIn (email:"${this.emailLog}", password: "${
-            this.passwordLog
-          }") {
+                      this.passwordLog
+                    }") {
                 user {
                   id,
                   name,
                   lastname,
                   email,
                   admin,
-                  bond
+                  bond,
+                  referral_code
                 },
                 token
               }
