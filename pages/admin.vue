@@ -523,7 +523,7 @@ export default {
             element.order_date = moment
               .unix(element.order_date / 1000)
               .utc()
-              .format("L");
+              .format("DD/MM/YYYY");
           });
         });
     },
