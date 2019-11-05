@@ -55,9 +55,12 @@
               </v-card-text>
               <v-progress-linear color="info" indeterminate v-if="loading"></v-progress-linear>
             </v-card>
-            <br>
+            <br />
             <center>
-              <v-btn to="/register" large outline color="black">No tienes cuenta? <br> Regístrate aquí</v-btn>
+              <v-btn to="/register" large outline color="black">
+                No tienes cuenta?
+                <br />Regístrate aquí
+              </v-btn>
             </center>
           </v-flex>
         </div>
@@ -120,8 +123,8 @@ export default {
           query: `
             mutation {
               signIn (email:"${this.emailLog}", password: "${
-                      this.passwordLog
-                    }") {
+            this.passwordLog
+          }") {
                 user {
                   id,
                   name,
@@ -162,6 +165,11 @@ export default {
     },
 
     getUser() {
+      this.$cookie.delete(config.cookie.userid);
+      this.$cookie.delete(config.cookie.user);
+      this.$cookie.delete(config.cookie.username);
+      this.$cookie.delete(config.cookie.rol);
+      this.$cookie.delete(config.cookie.token);
       var username = config.cookie.username;
       this.user = this.$cookie.get(username);
       if (this.user) {

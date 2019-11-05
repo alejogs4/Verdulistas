@@ -137,9 +137,11 @@ export default {
     },
     exit() {
       this.$cookie.delete(config.cookie.userid);
+      this.$cookie.delete(config.cookie.user);
       this.$cookie.delete(config.cookie.username);
       this.$cookie.delete(config.cookie.rol);
       this.$cookie.delete(config.cookie.token);
+      
       this.$router.push("/");
       this.snackbar = true;
       this.logged = false;
