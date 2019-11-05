@@ -645,7 +645,7 @@ export default {
       var userCookie = config.cookie.user;
       this.logged = false;
       if (this.$cookie.get(userCookie)) {
-        this.user = JSON.parse((this.user = JSON.parse()));
+        this.user = JSON.parse(this.$cookie.get(userCookie));
         this.logged = true;
         var rol = config.cookie.rol;
         this.rolUser = this.$cookie.get(rol);
