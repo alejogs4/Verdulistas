@@ -418,11 +418,9 @@ export default {
   data() {
     return {
       valid: false,
-      order: false,
-      orderText: "",
       tab: "Todos",
       logged: false,
-      user: {},
+      user: { bond: 0 },
       rolUser: "",
       dialog: false,
       dialogCompra: false,
@@ -645,12 +643,12 @@ export default {
     },
     getUser() {
       var userCookie = config.cookie.user;
-      this.user = JSON.parse(this.$cookie.get(userCookie));
-      var rol = config.cookie.rol;
-      this.rolUser = this.$cookie.get(rol);
-
-      if (this.user) {
+      this.logged = false;
+      if (this.$cookie.get(userCookie)) {
+        this.user = JSON.parse((this.user = JSON.parse()));
         this.logged = true;
+        var rol = config.cookie.rol;
+        this.rolUser = this.$cookie.get(rol);
       } else {
         this.cleanAllCart();
       }
