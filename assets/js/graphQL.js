@@ -36,6 +36,22 @@ let graphQL = {
         id,
         name
       }
+    }`,
+    orders: `
+    {
+      orders {
+        id,
+        cart_id,
+        address,
+        phone,
+        order_date,
+        user {
+          id,
+          name,
+          lastname,
+          email
+        }
+      }
     }`
   }
 }

@@ -3,7 +3,7 @@
     <v-tabs v-model="model" centered color="info" dark slider-color="warning">
       <v-tab href="#tab-1">Productos</v-tab>
       <v-tab href="#tab-2">Categorias</v-tab>
-      <v-tab href="#tab-3" disabled>Pedidos</v-tab>
+      <v-tab href="#tab-3">Pedidos</v-tab>
     </v-tabs>
 
     <v-tabs-items v-model="model">
@@ -104,6 +104,57 @@
                   <v-icon small>delete</v-icon>
                 </v-btn>
               </td>
+            </template>
+          </v-data-table>
+        </v-flex>
+      </v-tab-item>
+
+      <v-tab-item value="tab-3">
+        <!-- TABLA DE PEDIDOS -->
+        <v-flex xs12>
+          <v-toolbar flat>
+            <v-toolbar-title>
+              <h1>Pedidos</h1>
+            </v-toolbar-title>
+            <v-spacer></v-spacer>
+          </v-toolbar>
+          <v-data-table
+            :headers="headersOrder"
+            :items="orders"
+            :loading="loading"
+            class="elevation-1"
+            no-results-text="Tu búsqueda no encontró resultados"
+            no-data-text="No hay datos disponibles"
+            rows-per-page-text="Pedidos por página"
+          >
+            <template slot="items" slot-scope="props">
+              <td>{{ props.item.id }}</td>
+              <td>{{ props.item.cart_id }}</td>
+              <td>{{ props.item.address }}</td>
+              <td>{{ props.item.phone }}</td>
+              <td>{{ props.item.order_date }}</td>
+              <td>
+                <div>
+                  {{ props.item.user.name }}
+                  {{ props.item.user.lastname }}
+                  <br />
+                  {{ props.item.user.email }}
+                </div>
+              </td>
+              <!-- <td class="text-xs-left">
+                <v-btn small icon outline color="info" @click="editAction(props.item, 'category')">
+                  <v-icon small>edit</v-icon>
+                </v-btn>
+                <v-btn
+                  small
+                  icon
+                  outline
+                  color="error"
+                  @click="deleteAction(props.item, 'category')"
+                >
+                  <v-icon small>delete</v-icon>
+                </v-btn>
+              </td>-->
             </template>
           </v-data-table>
         </v-flex>
@@ -326,6 +377,7 @@
 <script>
 import config from "@/assets/js/config";
 import graphQL from "@/assets/js/graphQL";
+var moment = require("moment");
 const axios = require("axios");
 
 export default {
@@ -334,6 +386,7 @@ export default {
   beforeMount() {
     this.getUser();
     this.getCategories();
+    this.getOrders();
   },
   data() {
     return {
@@ -365,9 +418,18 @@ export default {
         { text: "Icono", value: "icon" },
         { text: "Acciones", value: "actions" }
       ],
+      headersOrder: [
+        { text: "ID", value: "id" },
+        { text: "Carrito", value: "cart_id" },
+        { text: "Direccón", value: "address" },
+        { text: "Teléfono", value: "phone" },
+        { text: "Fecha", value: "order_date" },
+        { text: "Usuario", value: "user" }
+      ],
       products: [],
       categories: [],
       categoriesNames: [],
+      orders: [],
       selectedProduct: {
         category: {
           name: ""
@@ -446,6 +508,28 @@ export default {
           result.categories.forEach(element => {
             this.categoriesNames.push(element.name);
             this.categories.push(element);
+          });
+        });
+    },
+    getOrders() {
+      this.loading = true;
+      axios({
+        url: config.api.url,
+        method: "POST",
+        headers: { token: this.$cookie.get(config.cookie.token) },
+        data: {
+          query: graphQL.queries.orders
+        }
+      })
+        .then(result => result.data.data)
+        .then(result => {
+          this.loading = false;
+          this.orders = result.orders;
+          this.orders.forEach(element => {
+            element.order_date = moment
+              .unix(element.order_date / 1000)
+              .utc()
+              .format("L");
           });
         });
     },

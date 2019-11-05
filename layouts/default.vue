@@ -22,12 +22,12 @@
             <v-list-tile to="/catalogue">
               <v-icon left>widgets</v-icon>Catálogo
             </v-list-tile>
-            <v-list-tile to="/recipes" disabled>
+            <!-- <v-list-tile to="/recipes">
               <v-icon left>receipt</v-icon>Recetas
-            </v-list-tile>
-            <v-list-tile to="/points">
+            </v-list-tile> -->
+            <!-- <v-list-tile to="/points">
               <v-icon left>important_devices</v-icon>VerduPoints
-            </v-list-tile>
+            </v-list-tile> -->
           </v-list>
         </v-menu>
       </v-toolbar-items>
@@ -35,8 +35,8 @@
       <v-spacer class="hidden-sm-and-down"></v-spacer>
       <v-toolbar-items class="hidden-sm-and-down">
         <v-btn to="/catalogue" large depressed flat>Catálogo</v-btn>
-        <v-btn to="/recipes" large depressed>Recetas</v-btn>
-        <v-btn to="/points" large depressed>VerduPoints</v-btn>
+        <!-- <v-btn to="/recipes" large depressed>Recetas</v-btn> -->
+        <!-- <v-btn to="/points" large depressed>VerduPoints</v-btn> -->
       </v-toolbar-items>
       <v-spacer />
       <v-toolbar-items>
