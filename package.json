@@ -25,7 +25,7 @@
     "v-money": "^0.8.1",
     "vue-cookie": "^1.1.4",
     "vue-html-to-paper": "^1.0.3",
-    "vue-moment": "^4.0.0",
+    "vue-moment": "^4.1.0",
     "vue2-filters": "^0.3.0",
     "vuetify": "^1.5.18",
     "vuetify-datetime-picker": "^1.0.8"
