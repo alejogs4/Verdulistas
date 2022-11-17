@@ -21,7 +21,7 @@
     "md5": "^2.2.1",
     "moment": "^2.22.2",
     "mustache": "^3.0.0",
-    "nuxt": "^2.0.0",
+    "nuxt": "^2.15.8",
     "v-money": "^0.8.1",
     "vue-cookie": "^1.1.4",
     "vue-html-to-paper": "^1.0.3",
